@@ -1,4 +1,21 @@
 services:
+  traefik:
+    image: traefik:v3
+    container_name: laravel_api_traefik
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8081:8080" # Traefik Dashboard on 8081
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro,z"
+    security_opt:
+      - label:disable
+
   postgres:
     image: postgres:16-alpine
     container_name: laravel_api_db
@@ -39,8 +56,11 @@ services:
       dockerfile: Dockerfile
     container_name: laravel_api_app
     restart: unless-stopped
-    ports:
-      - "8000:8000"
+    command: ["php", "-S", "0.0.0.0:8000", "-t", "public/", "public/index.php"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`api.laravel.localhost`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"
     volumes:
       - .:/var/www/html:z
     environment:
@@ -64,8 +84,10 @@ services:
     image: adminer:latest
     container_name: laravel_api_adminer
     restart: unless-stopped
-    ports:
-      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.laravel.localhost`)"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
     depends_on:
       postgres:
         condition: service_healthy

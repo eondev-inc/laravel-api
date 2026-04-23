@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Auth\Chain\AuthenticatedHandler;
+use App\Auth\Chain\RoleOrPermissionHandler;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -15,11 +17,14 @@ class UserController extends Controller
 {
     /**
      * GET /api/users
-     * Lista todos los usuarios. Requiere rol: admin.
+     * Lista todos los usuarios. Requiere rol admin OR permiso users.view.
      */
     public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
-        $auth = $this->authorize($request, role: 'admin');
+        $handler = new AuthenticatedHandler;
+        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.view'));
+
+        $auth = $handler->handle($request);
         if ($auth !== true) {
             return $auth;
         }
@@ -31,11 +36,14 @@ class UserController extends Controller
 
     /**
      * POST /api/users
-     * Crea un nuevo usuario. Requiere rol: admin.
+     * Crea un nuevo usuario. Requiere rol admin OR permiso users.create.
      */
     public function store(StoreUserRequest $request): UserResource|JsonResponse
     {
-        $auth = $this->authorize($request, role: 'admin');
+        $handler = new AuthenticatedHandler;
+        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.create'));
+
+        $auth = $handler->handle($request);
         if ($auth !== true) {
             return $auth;
         }
@@ -47,16 +55,19 @@ class UserController extends Controller
             $user->roles()->sync($roleIds);
         }
 
-        return new UserResource($user->load('roles'));
+        return (new UserResource($user->load('roles')))->response()->setStatusCode(201);
     }
 
     /**
      * GET /api/users/{user}
-     * Muestra un usuario. Requiere rol: admin.
+     * Muestra un usuario. Requiere rol admin OR permiso users.view.
      */
     public function show(Request $request, User $user): UserResource|JsonResponse
     {
-        $auth = $this->authorize($request, role: 'admin');
+        $handler = new AuthenticatedHandler;
+        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.view'));
+
+        $auth = $handler->handle($request);
         if ($auth !== true) {
             return $auth;
         }
@@ -66,11 +77,14 @@ class UserController extends Controller
 
     /**
      * PUT /api/users/{user}
-     * Actualiza un usuario. Requiere rol: admin.
+     * Actualiza un usuario. Requiere rol admin OR permiso users.update.
      */
     public function update(UpdateUserRequest $request, User $user): UserResource|JsonResponse
     {
-        $auth = $this->authorize($request, role: 'admin');
+        $handler = new AuthenticatedHandler;
+        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.update'));
+
+        $auth = $handler->handle($request);
         if ($auth !== true) {
             return $auth;
         }
@@ -87,11 +101,14 @@ class UserController extends Controller
 
     /**
      * DELETE /api/users/{user}
-     * Elimina un usuario. Requiere rol: admin + permiso: users.delete.
+     * Elimina un usuario. Requiere rol admin OR permiso users.delete.
      */
     public function destroy(Request $request, User $user): JsonResponse
     {
-        $auth = $this->authorize($request, role: 'admin', permission: 'users.delete');
+        $handler = new AuthenticatedHandler;
+        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.delete'));
+
+        $auth = $handler->handle($request);
         if ($auth !== true) {
             return $auth;
         }
