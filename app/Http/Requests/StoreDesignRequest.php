@@ -16,7 +16,7 @@ class StoreDesignRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'product_id' => ['required', 'string', 'exists:products,uuid'],
-            'image' => ['required', 'file', 'mimes:png,jpg', 'max:5120'],
+            'image' => ['required', 'image', 'mimes:png,jpg', 'max:5120'],
         ];
     }
 }

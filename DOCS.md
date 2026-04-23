@@ -264,7 +264,6 @@ protected function authorize(
 
     if ($permission !== '') {
         $tail->setNext(new HasPermissionHandler($permission));
-    }
 
     return $head->handle($request);
 }

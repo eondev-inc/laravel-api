@@ -48,6 +48,10 @@ class CartController extends Controller
 
         if ($request->filled('design_id')) {
             $design = Design::where('uuid', $request->design_id)->firstOrFail();
+
+            if (! $design->is_active && $design->user_id !== $cart->user_id) {
+                return response()->json(['message' => 'Design not available.'], 403);
+            }
         }
 
         $unitPrice = $this->calculateUnitPrice($variation, $design);

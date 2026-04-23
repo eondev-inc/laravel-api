@@ -23,16 +23,18 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
 
-        $cart = Cart::where('user_id', $user->id)
-            ->where('status', 'active')
-            ->with('items.variation.product')
-            ->first();
+        try {
+            $result = DB::transaction(function () use ($user) {
+            $cart = Cart::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->with('items.variation.product')
+                ->lockForUpdate()
+                ->first();
 
-        if (! $cart || $cart->items->isEmpty()) {
-            return response()->json(['message' => 'No active cart with items found.'], 422);
-        }
+            if (! $cart || $cart->items->isEmpty()) {
+                throw new \Exception('No active cart with items found.');
+            }
 
-        $result = DB::transaction(function () use ($cart, $user) {
             $subtotal = $cart->items->sum(fn ($item) => $item->unit_price * $item->quantity);
 
             $order = Order::create([
@@ -76,7 +78,10 @@ class CheckoutController extends Controller
             'token_ws' => $result['token'],
             'url' => $result['url'],
         ]);
+    } catch (\Exception $e) {
+        return response()->json(['message' => $e->getMessage()], 422);
     }
+}
 
     /**
      * GET|POST /api/checkout/commit
@@ -94,6 +99,12 @@ class CheckoutController extends Controller
 
         if (! $order) {
             return redirect(config('app.frontend_url').'/checkout/failure');
+        }
+
+        if ($order->status !== 'pending') {
+            $path = $order->status === 'paid' ? '/checkout/success' : '/checkout/failure';
+
+            return redirect(config('app.frontend_url').$path);
         }
 
         try {

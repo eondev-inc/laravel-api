@@ -21,8 +21,10 @@ class CredentialsValidationHandler extends AbstractHandler
     /**
      * Hash dummy para ejecutar el verificador cuando el usuario no existe,
      * evitando diferencias de tiempo que revelarían si el email está registrado.
+     * Generado con un costo 12 (mismo que el default de Laravel bcrypt) para un
+     * delay realista de validación de contraseñas.
      */
-    private const DUMMY_HASH = '$2y$04$usesomesillystringfore2uDLvp1jv2eRvhl/6c6z6/6c6z6/6c6z6';
+    private const DUMMY_HASH = '$2y$12$Z0pE4A9v/y.pGXYA0iQZ.eKzRj0L.uYw9.N9M0f.t/tM.1aT9.X2m';
 
     /** @var callable(string, string): bool */
     private $hashVerifier;
@@ -42,8 +44,9 @@ class CredentialsValidationHandler extends AbstractHandler
         $user = User::where('email', $request->input('email'))->first();
 
         if ($user === null) {
-            // Ejecutar verificación dummy para evitar timing-based user enumeration
-            ($this->hashVerifier)(str_repeat('a', 10), self::DUMMY_HASH);
+            // Ejecutar verificación dummy con la password enviada para evitar
+            // timing-based user enumeration con costo de CPU real (Bcrypt costo 12)
+            ($this->hashVerifier)($request->input('password') ?? str_repeat('a', 10), self::DUMMY_HASH);
 
             return new JsonResponse(['message' => 'Las credenciales proporcionadas son incorrectas.'], 401);
         }

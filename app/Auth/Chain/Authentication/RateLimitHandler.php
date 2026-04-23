@@ -66,7 +66,7 @@ class RateLimitHandler extends AbstractHandler
 
     private function throttleKey(Request $request): string
     {
-        return 'login-attempts:'.strtolower((string) $request->input('email'));
+        return 'login-attempts:'.strtolower((string) $request->input('email')).'|'.$request->ip();
     }
 
     private function secondsToMinutes(int $seconds): string
