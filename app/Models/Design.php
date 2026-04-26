@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['name', 'file_path', 'file_url', 'file_extension', 'is_active', 'price_modifier', 'product_id', 'user_id'])]
+#[Fillable(['name', 'file_path', 'file_extension', 'is_active', 'price_modifier', 'product_id', 'user_id'])]
 class Design extends Model
 {
     /** @use HasFactory<DesignFactory> */

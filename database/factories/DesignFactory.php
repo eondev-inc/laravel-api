@@ -19,7 +19,6 @@ class DesignFactory extends Factory
         return [
             'name' => fake()->words(2, true),
             'file_path' => 'designs/'.fake()->uuid().'.'.$ext,
-            'file_url' => fake()->imageUrl(),
             'file_extension' => $ext,
             'is_active' => true,
             'product_id' => Product::factory(),

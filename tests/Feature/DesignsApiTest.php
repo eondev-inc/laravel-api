@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
-    Storage::fake('public');
+    Storage::fake('s3_private');
 
     $this->adminRole = Role::create(['name' => 'admin', 'display_name' => 'Administrador']);
     $this->viewerRole = Role::create(['name' => 'viewer', 'display_name' => 'Lector']);
@@ -58,7 +58,7 @@ describe('POST /api/designs', function () {
             ->assertJsonPath('data.name', 'My Design')
             ->assertJsonPath('data.file_extension', 'png');
 
-        Storage::disk('public')->assertExists(
+        Storage::disk('s3_private')->assertExists(
             Design::where('name', 'My Design')->first()->file_path
         );
     });
@@ -142,22 +142,65 @@ describe('DELETE /api/designs/{design}', function () {
     it('deletes design when admin', function () {
         $admin = User::factory()->create();
         $admin->roles()->attach($this->adminRole->id);
-        $design = Design::factory()->create();
+
+        // Subir un archivo fake para que exista en s3_private
+        $filePath = 'designs/test-file.png';
+        Storage::disk('s3_private')->put($filePath, 'fake-content');
+        $design = Design::factory()->create(['file_path' => $filePath]);
 
         Sanctum::actingAs($admin);
 
         $this->deleteJson("/api/designs/{$design->uuid}")
             ->assertStatus(200)
             ->assertJsonPath('message', 'Design deleted.');
+
+        Storage::disk('s3_private')->assertMissing($filePath);
     });
 
     it('returns 403 when non-admin', function () {
         $viewer = User::factory()->create();
         $viewer->roles()->attach($this->viewerRole->id);
-        $design = Design::factory()->create();
+
+        $filePath = 'designs/protected-file.png';
+        Storage::disk('s3_private')->put($filePath, 'fake-content');
+        $design = Design::factory()->create(['file_path' => $filePath]);
 
         Sanctum::actingAs($viewer);
 
         $this->deleteJson("/api/designs/{$design->uuid}")->assertStatus(403);
+
+        // El archivo debe seguir existiendo — no fue eliminado
+        Storage::disk('s3_private')->assertExists($filePath);
+    });
+});
+
+// ─── POST /api/designs — verificaciones adicionales de almacenamiento ─────────
+
+describe('POST /api/designs — s3_private storage', function () {
+    it('stores file_path in DB pointing to s3_private and does not store file_url', function () {
+        $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
+        $product = Product::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $file = UploadedFile::fake()->create('design.png', 100, 'image/png');
+
+        $this->postJson('/api/designs', [
+            'name' => 'S3 Design',
+            'product_id' => $product->uuid,
+            'image' => $file,
+        ])->assertStatus(201);
+
+        $design = Design::where('name', 'S3 Design')->first();
+
+        expect($design->file_path)->toStartWith('designs/')
+            ->and($design->file_path)->toEndWith('.png');
+
+        // file_url column fue eliminada en Phase 2 — no debe existir en el modelo
+        expect($design->toArray())->not->toHaveKey('file_url');
+
+        // El archivo debe existir en s3_private
+        Storage::disk('s3_private')->assertExists($design->file_path);
     });
 });

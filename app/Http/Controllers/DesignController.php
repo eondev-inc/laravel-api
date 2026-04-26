@@ -47,13 +47,11 @@ class DesignController extends Controller
 
         $file = $request->file('image');
         $extension = strtolower($file->guessExtension() ?? 'png');
-        $path = Storage::disk('public')->putFileAs('designs', $file, Str::random(40).'.'.$extension);
-        $url = Storage::disk('public')->url($path);
+        $path = Storage::disk('s3_private')->putFileAs('designs', $file, Str::random(40).'.'.$extension);
 
         $design = Design::create([
             'name' => $request->name,
             'file_path' => $path,
-            'file_url' => $url,
             'file_extension' => $extension,
             'product_id' => $product->id,
             'user_id' => $request->user()->id,
@@ -72,7 +70,7 @@ class DesignController extends Controller
             return $auth;
         }
 
-        Storage::disk('public')->delete($design->file_path);
+        Storage::disk('s3_private')->delete($design->file_path);
         $design->delete();
 
         return response()->json(['message' => 'Design deleted.'], 200);

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
-    Storage::fake('public');
+    Storage::fake('s3_private');
     RateLimiter::clear('uploads');
 
     $designerRole = Role::create(['name' => 'designer', 'display_name' => 'Diseñador']);
