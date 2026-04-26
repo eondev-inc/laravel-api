@@ -69,14 +69,43 @@ class AuthController extends Controller
     }
 
     /**
+     * POST /api/refresh
+     *
+     * Revoca el token actual y emite uno nuevo.
+     * Requiere middleware auth:sanctum en la ruta.
+     */
+    public function refresh(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        // Revocar token actual antes de emitir el nuevo
+        $user->currentAccessToken()->delete();
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return new JsonResponse([
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ], 200);
+    }
+
+    /**
      * POST /api/logout
      *
      * Revoca el token actual del usuario autenticado.
      * Requiere middleware auth:sanctum en la ruta.
+     * Validación defensiva: verifica que exista un token activo antes de eliminarlo.
      */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $token = $request->user()?->currentAccessToken();
+
+        if (! $token) {
+            return new JsonResponse(['message' => 'No hay un token activo para revocar.'], 400);
+        }
+
+        $token->delete();
 
         return new JsonResponse(['message' => 'Sesión cerrada correctamente.'], 200);
     }
