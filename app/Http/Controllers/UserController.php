@@ -24,7 +24,8 @@ class UserController extends Controller
             return $auth;
         }
 
-        $users = User::with('roles')->paginate(15);
+        $perPage = min((int) $request->input('per_page', 15), 100);
+        $users = User::with('roles')->paginate($perPage);
 
         return UserResource::collection($users);
     }

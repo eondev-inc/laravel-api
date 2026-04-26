@@ -84,9 +84,11 @@ describe('Security headers on API responses', function () {
             ->assertHeader('X-Frame-Options', 'DENY');
     });
 
-    it('includes X-XSS-Protection header', function () {
-        $this->getJson('/api/products')
-            ->assertHeader('X-XSS-Protection', '1; mode=block');
+    it('includes Content-Security-Policy header instead of deprecated X-XSS-Protection', function () {
+        $response = $this->getJson('/api/products');
+
+        $response->assertHeader('Content-Security-Policy');
+        expect($response->headers->has('X-XSS-Protection'))->toBeFalse();
     });
 
     it('includes Strict-Transport-Security header', function () {
