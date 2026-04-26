@@ -19,7 +19,7 @@ class HasPermissionHandler extends AbstractHandler
     public function handle(Request $request): true|JsonResponse
     {
         if (! $request->user()->hasPermission($this->permission)) {
-            return new JsonResponse(['message' => 'Forbidden. Required permission: '.$this->permission], 403);
+            return $this->deny($request, 'missing_permission:'.$this->permission, 403, 'Forbidden. Required permission: '.$this->permission);
         }
 
         return $this->passToNext($request);

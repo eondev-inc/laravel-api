@@ -18,7 +18,7 @@ class HasRoleHandler extends AbstractHandler
     public function handle(Request $request): true|JsonResponse
     {
         if (! $request->user()->hasRole($this->role)) {
-            return new JsonResponse(['message' => 'Forbidden. Required role: '.$this->role], 403);
+            return $this->deny($request, 'missing_role:'.$this->role, 403, 'Forbidden. Required role: '.$this->role);
         }
 
         return $this->passToNext($request);

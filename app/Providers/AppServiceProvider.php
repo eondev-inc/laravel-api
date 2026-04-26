@@ -37,6 +37,15 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Producción requiere Redis como cache driver para rate limiting distribuido.
+        // Sin Redis, el rate limiter usa almacenamiento local y falla en ambientes multi-process.
+        if (config('app.env') === 'production' && config('cache.default') !== 'redis') {
+            throw new \RuntimeException(
+                'Redis is required as the cache driver in production. '.
+                'Set CACHE_STORE=redis in your .env file.'
+            );
+        }
+
         Gate::define('viewApiDocs', function ($user = null) {
             return app()->environment('local');
         });

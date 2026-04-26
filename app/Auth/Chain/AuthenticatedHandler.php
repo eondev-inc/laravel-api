@@ -14,7 +14,7 @@ class AuthenticatedHandler extends AbstractHandler
     public function handle(Request $request): true|JsonResponse
     {
         if ($request->user() === null) {
-            return new JsonResponse(['message' => 'Unauthenticated.'], 401);
+            return $this->deny($request, 'unauthenticated', 401, 'Unauthenticated.');
         }
 
         return $this->passToNext($request);

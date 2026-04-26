@@ -5,6 +5,7 @@ namespace App\Auth\Chain;
 use App\Auth\Chain\Contracts\AuthorizationHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Implementa el mecanismo de encadenamiento.
@@ -34,5 +35,26 @@ abstract class AbstractHandler implements AuthorizationHandler
         }
 
         return $this->next->handle($request);
+    }
+
+    /**
+     * Registra un fallo de autorización y retorna el JsonResponse apropiado.
+     */
+    protected function deny(Request $request, string $reason, int $status, string $message): JsonResponse
+    {
+        try {
+            Log::warning('auth_failure', [
+                'reason' => $reason,
+                'status' => $status,
+                'user_id' => $request->user()?->getKey(),
+                'ip' => $request->ip(),
+                'path' => $request->path(),
+                'method' => $request->method(),
+            ]);
+        } catch (\Throwable) {
+            // No romper el flujo si el logging falla (e.g., entornos sin facade root)
+        }
+
+        return new JsonResponse(['message' => $message], $status);
     }
 }
