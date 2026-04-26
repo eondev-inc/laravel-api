@@ -47,6 +47,12 @@ class User extends Authenticatable
         ];
     }
 
+    /** @var array<string, bool> Cache request-scoped de roles */
+    private array $roleCache = [];
+
+    /** @var array<string, bool> Cache request-scoped de permisos */
+    private array $permissionCache = [];
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
@@ -54,13 +60,53 @@ class User extends Authenticatable
 
     public function hasRole(string $role): bool
     {
-        return $this->roles()->where('name', $role)->exists();
+        if (! array_key_exists($role, $this->roleCache)) {
+            $this->roleCache[$role] = $this->roles()->where('name', $role)->exists();
+        }
+
+        return $this->roleCache[$role];
     }
 
     public function hasPermission(string $permission): bool
     {
-        return $this->roles()
-            ->whereHas('permissions', fn ($q) => $q->where('permissions.name', $permission))
-            ->exists();
+        if (! array_key_exists($permission, $this->permissionCache)) {
+            $this->permissionCache[$permission] = $this->roles()
+                ->whereHas('permissions', fn ($q) => $q->where('permissions.name', $permission))
+                ->exists();
+        }
+
+        return $this->permissionCache[$permission];
+    }
+
+    /**
+     * Retorna true si el usuario tiene AL MENOS UNO de los roles dados (OR logic).
+     *
+     * @param  array<string>  $roles
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retorna true si el usuario tiene AL MENOS UNO de los permisos dados (OR logic).
+     *
+     * @param  array<string>  $permissions
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

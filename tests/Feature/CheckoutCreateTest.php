@@ -68,7 +68,7 @@ describe('POST /api/checkout', function () {
 
         $response = $this->postJson('/api/checkout');
 
-        $response->assertStatus(500);
+        $response->assertStatus(422);
 
         expect(Order::where('user_id', $user->id)->count())->toBe(0);
         expect($cart->fresh()->status)->toBe('active');

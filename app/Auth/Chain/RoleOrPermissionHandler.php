@@ -29,9 +29,11 @@ class RoleOrPermissionHandler extends AbstractHandler
             return $this->passToNext($request);
         }
 
-        return new JsonResponse(
-            ['message' => "Forbidden. Required role '{$this->role}' or permission '{$this->permission}'."],
-            403
+        return $this->deny(
+            $request,
+            "missing_role:{$this->role}_or_permission:{$this->permission}",
+            403,
+            "Forbidden. Required role '{$this->role}' or permission '{$this->permission}'.",
         );
     }
 }

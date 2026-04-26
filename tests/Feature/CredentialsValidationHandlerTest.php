@@ -31,7 +31,7 @@ describe('CredentialsValidationHandler', function () {
 
         expect($result->getStatusCode())->toBe(401);
         expect($verifierCallCount)->toBe(1); // dummy hash MUST be called
-        expect($verifierPassword)->toBe(str_repeat('a', 10)); // correct dummy input
+        expect($verifierPassword)->toBe('any-password'); // now uses the submitted password
     });
 
     it('calls the hash verifier with real password when user exists', function () {

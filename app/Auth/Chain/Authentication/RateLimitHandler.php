@@ -39,7 +39,7 @@ class RateLimitHandler extends AbstractHandler
             $seconds = RateLimiter::availableIn($key);
 
             return new JsonResponse([
-                'message' => 'Demasiados intentos fallidos. Intenta de nuevo en '.$this->secondsToMinutes($seconds).'.)',
+                'message' => 'Demasiados intentos fallidos. Intenta de nuevo en '.$this->secondsToMinutes($seconds).'.',
                 'retry_after_seconds' => $seconds,
             ], 429, ['Retry-After' => $seconds]);
         }
@@ -66,7 +66,9 @@ class RateLimitHandler extends AbstractHandler
 
     private function throttleKey(Request $request): string
     {
-        return 'login-attempts:'.strtolower((string) $request->input('email'));
+        $hashedEmail = hash('sha256', strtolower((string) $request->input('email')));
+
+        return 'login-attempts:'.$hashedEmail.'|'.$request->ip();
     }
 
     private function secondsToMinutes(int $seconds): string
