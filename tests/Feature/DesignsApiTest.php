@@ -17,6 +17,11 @@ beforeEach(function () {
 
     $this->catalogPermission = Permission::create(['name' => 'catalog.manage', 'display_name' => 'Gestionar catálogo']);
     $this->adminRole->permissions()->attach($this->catalogPermission->id);
+
+    // Permiso requerido para subir diseños
+    $this->designerRole = Role::create(['name' => 'designer', 'display_name' => 'Diseñador']);
+    $this->designCreatePermission = Permission::create(['name' => 'designs.create', 'display_name' => 'Crear diseños']);
+    $this->designerRole->permissions()->attach($this->designCreatePermission->id);
 });
 
 // ─── GET /api/designs ─────────────────────────────────────────────────────────
@@ -37,6 +42,7 @@ describe('GET /api/designs', function () {
 describe('POST /api/designs', function () {
     it('accepts valid png upload', function () {
         $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
         $product = Product::factory()->create();
 
         Sanctum::actingAs($user);
@@ -59,6 +65,7 @@ describe('POST /api/designs', function () {
 
     it('accepts valid jpg upload', function () {
         $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
         $product = Product::factory()->create();
 
         Sanctum::actingAs($user);
@@ -74,6 +81,7 @@ describe('POST /api/designs', function () {
 
     it('accepts jpeg extension upload (jpg and jpeg are the same format)', function () {
         $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
         $product = Product::factory()->create();
 
         Sanctum::actingAs($user);
@@ -89,6 +97,7 @@ describe('POST /api/designs', function () {
 
     it('rejects pdf upload with 422', function () {
         $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
         $product = Product::factory()->create();
 
         Sanctum::actingAs($user);
@@ -106,6 +115,7 @@ describe('POST /api/designs', function () {
 
     it('rejects invalid mime type with 422', function () {
         $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
         $product = Product::factory()->create();
 
         Sanctum::actingAs($user);

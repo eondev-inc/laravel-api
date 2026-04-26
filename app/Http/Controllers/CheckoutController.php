@@ -80,7 +80,13 @@ class CheckoutController extends Controller
                 'url' => $result['url'],
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            Log::error('Checkout gateway error during create', [
+                'exception' => $e,
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json(['message' => 'El pago no pudo procesarse. Por favor, inténtalo de nuevo.'], 422);
         }
     }
 

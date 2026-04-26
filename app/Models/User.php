@@ -77,4 +77,36 @@ class User extends Authenticatable
 
         return $this->permissionCache[$permission];
     }
+
+    /**
+     * Retorna true si el usuario tiene AL MENOS UNO de los roles dados (OR logic).
+     *
+     * @param  array<string>  $roles
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retorna true si el usuario tiene AL MENOS UNO de los permisos dados (OR logic).
+     *
+     * @param  array<string>  $permissions
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

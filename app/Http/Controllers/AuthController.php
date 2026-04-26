@@ -109,4 +109,35 @@ class AuthController extends Controller
 
         return new JsonResponse(['message' => 'Sesión cerrada correctamente.'], 200);
     }
+
+    /**
+     * POST /api/user/password
+     *
+     * Actualiza la contraseña del usuario autenticado.
+     * Requiere la contraseña actual para confirmar identidad antes de cambiarla.
+     * Requiere middleware auth:sanctum en la ruta.
+     */
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! password_verify($request->input('current_password'), $user->password)) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'current_password' => ['The current password is incorrect.'],
+                ],
+            ], 422);
+        }
+
+        $user->update(['password' => $request->input('password')]);
+
+        return new JsonResponse(['message' => 'Password updated successfully.'], 200);
+    }
 }

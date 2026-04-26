@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Auth\Chain\AuthenticatedHandler;
-use App\Auth\Chain\RoleOrPermissionHandler;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -21,10 +19,7 @@ class UserController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
-        $handler = new AuthenticatedHandler;
-        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.view'));
-
-        $auth = $handler->handle($request);
+        $auth = $this->authorize($request, role: ['admin'], permission: ['users.view']);
         if ($auth !== true) {
             return $auth;
         }
@@ -40,10 +35,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): UserResource|JsonResponse
     {
-        $handler = new AuthenticatedHandler;
-        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.create'));
-
-        $auth = $handler->handle($request);
+        $auth = $this->authorize($request, role: ['admin'], permission: ['users.create']);
         if ($auth !== true) {
             return $auth;
         }
@@ -64,10 +56,7 @@ class UserController extends Controller
      */
     public function show(Request $request, User $user): UserResource|JsonResponse
     {
-        $handler = new AuthenticatedHandler;
-        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.view'));
-
-        $auth = $handler->handle($request);
+        $auth = $this->authorize($request, role: ['admin'], permission: ['users.view']);
         if ($auth !== true) {
             return $auth;
         }
@@ -81,10 +70,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): UserResource|JsonResponse
     {
-        $handler = new AuthenticatedHandler;
-        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.update'));
-
-        $auth = $handler->handle($request);
+        $auth = $this->authorize($request, role: ['admin'], permission: ['users.update']);
         if ($auth !== true) {
             return $auth;
         }
@@ -105,10 +91,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user): JsonResponse
     {
-        $handler = new AuthenticatedHandler;
-        $handler->setNext(new RoleOrPermissionHandler('admin', 'users.delete'));
-
-        $auth = $handler->handle($request);
+        $auth = $this->authorize($request, role: ['admin'], permission: ['users.delete']);
         if ($auth !== true) {
             return $auth;
         }
