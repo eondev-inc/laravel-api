@@ -35,6 +35,8 @@ HTTP Request
 │                                                             │
 │  POST   /api/login                → AuthController (público)│
 │  POST   /api/logout               → AuthController (sanctum)│
+│  POST   /api/refresh              → AuthController (sanctum)│
+│  POST   /api/user/password        → AuthController (sanctum)│
 │  GET    /api/user                 → closure       (sanctum) │
 │  apiResource /api/users           → UserController (sanctum)│
 │  GET    /api/categories[/{id}]    → CategoryController      │
@@ -47,16 +49,17 @@ HTTP Request
      │
      ▼
 ┌─────────────────────────────────────────────────────────────┐
+│  Middleware: SetRequestId (X-Request-ID + log context)      │
 │  Middleware: auth:sanctum (Sanctum bearer token)            │
 │  Middleware: throttle:api (60 req/min por usuario o IP)     │
-│  Middleware: SecurityHeaders (X-Frame-Options, HSTS, etc.)  │
+│  Middleware: SecurityHeaders (CSP, HSTS, X-Frame, etc.)     │
 └─────────────────────────────────────────────────────────────┘
      │
      ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  Controller                                                 │
 │  ├── AuthController     → Pipeline CoR Autenticación        │
-│  ├── UserController     → Pipeline CoR Autorización         │
+│  ├── UserController     → Pipeline CoR Autorización (OR)    │
 │  ├── CategoryController → Pipeline CoR Autorización         │
 │  ├── ProductController  → Pipeline CoR Autorización         │
 │  ├── DesignController   → Pipeline CoR Autorización         │
@@ -72,35 +75,37 @@ app/
 ├── Auth/
 │   └── Chain/
 │       ├── Contracts/
-│       │   └── AuthorizationHandler.php   ← interface compartida
-│       ├── AbstractHandler.php            ← mecanismo de encadenamiento
-│       ├── AuthenticatedHandler.php       ← verifica user != null
-│       ├── HasRoleHandler.php             ← verifica rol RBAC
-│       ├── HasPermissionHandler.php       ← verifica permiso RBAC
+│       │   └── AuthorizationHandler.php      ← interface compartida
+│       ├── AbstractHandler.php               ← encadenamiento + deny() con logging
+│       ├── AuthenticatedHandler.php          ← verifica user != null
+│       ├── HasRoleHandler.php                ← verifica un rol RBAC (string)
+│       ├── HasPermissionHandler.php          ← verifica un permiso RBAC (string)
+│       ├── RoleOrPermissionHandler.php       ← OR entre un rol y un permiso (strings)
+│       ├── AnyRoleOrPermissionHandler.php    ← OR entre arrays de roles y permisos
 │       └── Authentication/
-│           ├── EmailExistsHandler.php     ← email existe en DB
-│           ├── RateLimitHandler.php       ← rate limiting Redis
-│           ├── PasswordMatchesHandler.php ← verifica password
-│           └── AccountActiveHandler.php   ← cuenta activa
+│           ├── RateLimitHandler.php          ← rate limiting Redis (SHA256 key)
+│           ├── CredentialsValidationHandler.php ← valida email+password (timing-safe)
+│           └── AccountActiveHandler.php      ← cuenta activa (fail-closed)
 ├── Contracts/
 │   └── Payments/
-│       └── TransbankGateway.php          ← interface del gateway de pago
+│       └── TransbankGateway.php             ← interface del gateway de pago
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Controller.php                ← método authorize() base
-│   │   ├── AuthController.php            ← login / logout
-│   │   ├── UserController.php            ← CRUD usuarios
-│   │   ├── CategoryController.php        ← CRUD categorías
-│   │   ├── ProductController.php         ← CRUD productos
-│   │   ├── DesignController.php          ← CRUD diseños + upload
-│   │   ├── CartController.php            ← carrito guest + auth
-│   │   └── CheckoutController.php        ← checkout + callback Transbank
+│   │   ├── Controller.php                   ← authorize() con OR logic (string|array)
+│   │   ├── AuthController.php               ← login / logout / refresh / password
+│   │   ├── UserController.php               ← CRUD usuarios
+│   │   ├── CategoryController.php           ← CRUD categorías
+│   │   ├── ProductController.php            ← CRUD productos
+│   │   ├── DesignController.php             ← CRUD diseños + upload
+│   │   ├── CartController.php               ← carrito guest + auth
+│   │   └── CheckoutController.php           ← checkout + callback Transbank
 │   ├── Middleware/
-│   │   └── SecurityHeaders.php           ← headers de seguridad HTTP
-│   ├── Requests/                         ← Form Requests con validación
-│   └── Resources/                        ← API Resources (transformación JSON)
+│   │   ├── SecurityHeaders.php              ← headers HTTP (CSP, HSTS, etc.)
+│   │   └── SetRequestId.php                 ← X-Request-ID + contexto de logs
+│   ├── Requests/                            ← Form Requests con validación
+│   └── Resources/                           ← API Resources (transformación JSON)
 ├── Models/
-│   ├── User.php
+│   ├── User.php                             ← hasRole/hasPermission/hasAnyRole/hasAnyPermission + cache
 │   ├── Role.php
 │   ├── Permission.php
 │   ├── Category.php
@@ -112,8 +117,8 @@ app/
 │   ├── Order.php
 │   └── OrderItem.php
 └── Services/
-    ├── CartResolver.php                  ← resuelve carrito guest o autenticado
-    └── TransbankService.php              ← implementación del gateway Transbank
+    ├── CartResolver.php                     ← resuelve carrito guest o autenticado
+    └── TransbankService.php                 ← implementación del gateway Transbank
 ```
 
 ---
@@ -189,16 +194,13 @@ Request
 AuthenticatedHandler  ──── user === null? ──→ 401 Unauthenticated
    │ pasa
    ▼
-HasRoleHandler (opcional) ── !hasRole? ──→ 403 Forbidden
-   │ pasa
-   ▼
-HasPermissionHandler (opcional) ── !hasPermission? ──→ 403 Forbidden
+AnyRoleOrPermissionHandler (opcional) ── !hasAnyRole && !hasAnyPermission? ──→ 403 Forbidden
    │ pasa
    ▼
  true
 ```
 
-`HasRoleHandler` y `HasPermissionHandler` son opcionales: el controller base los agrega a la cadena solo si se pasan los parámetros correspondientes.
+`AnyRoleOrPermissionHandler` es opcional y se agrega automáticamente cuando se pasan `role` o `permission` a `$this->authorize()`. Soporta lógica OR: basta con que el usuario tenga **alguno** de los roles o permisos indicados.
 
 ### Interface y clase base
 
@@ -214,7 +216,7 @@ interface AuthorizationHandler
 
 **`app/Auth/Chain/AbstractHandler.php`**
 
-Implementa `setNext()` y expone `passToNext()` para los handlers concretos. Cuando no hay siguiente handler, `passToNext()` retorna `true` (cadena completa aprobada).
+Implementa `setNext()` y expone `passToNext()` para los handlers concretos. Cuando no hay siguiente handler, `passToNext()` retorna `true` (cadena completa aprobada). Centraliza el logging de fallos de autorización mediante `deny()`.
 
 ```php
 abstract class AbstractHandler implements AuthorizationHandler
@@ -234,6 +236,20 @@ abstract class AbstractHandler implements AuthorizationHandler
         }
         return $this->next->handle($request);
     }
+
+    protected function deny(Request $request, string $reason, int $status): JsonResponse
+    {
+        Log::warning('auth_failure', [
+            'reason'  => $reason,
+            'status'  => $status,
+            'user_id' => $request->user()?->getKey(),
+            'ip'      => $request->ip(),
+            'path'    => $request->path(),
+            'method'  => $request->method(),
+        ]);
+
+        return new JsonResponse(['message' => $reason], $status);
+    }
 }
 ```
 
@@ -244,26 +260,29 @@ abstract class AbstractHandler implements AuthorizationHandler
 | `AuthenticatedHandler` | `app/Auth/Chain/AuthenticatedHandler.php` | 401 | `$request->user() === null` |
 | `HasRoleHandler` | `app/Auth/Chain/HasRoleHandler.php` | 403 | `!$user->hasRole($role)` |
 | `HasPermissionHandler` | `app/Auth/Chain/HasPermissionHandler.php` | 403 | `!$user->hasPermission($permission)` |
+| `RoleOrPermissionHandler` | `app/Auth/Chain/RoleOrPermissionHandler.php` | 403 | `!hasRole && !hasPermission` (un string cada uno) |
+| `AnyRoleOrPermissionHandler` | `app/Auth/Chain/AnyRoleOrPermissionHandler.php` | 403 | `!hasAnyRole && !hasAnyPermission` (acepta arrays) |
 
 ### Construcción del pipeline en el Controller base
 
 **`app/Http/Controllers/Controller.php`**
 
+`authorize()` acepta strings o arrays para `role` y `permission`. Cuando ambos son arrays no vacíos, construye un único `AnyRoleOrPermissionHandler` con lógica OR entre todos los valores.
+
 ```php
 protected function authorize(
     Request $request,
-    string $role = '',
-    string $permission = '',
+    string|array $role = '',
+    string|array $permission = '',
 ): true|JsonResponse {
     $head = new AuthenticatedHandler;
-    $tail = $head;
 
-    if ($role !== '') {
-        $tail = $tail->setNext(new HasRoleHandler($role));
+    $roles       = array_filter((array) $role);
+    $permissions = array_filter((array) $permission);
+
+    if ($roles !== [] || $permissions !== []) {
+        $head->setNext(new AnyRoleOrPermissionHandler($roles, $permissions));
     }
-
-    if ($permission !== '') {
-        $tail->setNext(new HasPermissionHandler($permission));
 
     return $head->handle($request);
 }
@@ -276,21 +295,43 @@ protected function authorize(
 $auth = $this->authorize($request);
 if ($auth !== true) return $auth;
 
-// Verificar rol
+// Verificar un rol específico
 $auth = $this->authorize($request, role: 'admin');
 if ($auth !== true) return $auth;
 
-// Verificar rol + permiso (ambos requeridos)
-$auth = $this->authorize($request, role: 'admin', permission: 'catalog.manage');
+// Lógica OR: admin O cualquiera con users.view
+$auth = $this->authorize($request, role: ['admin'], permission: ['users.view']);
+if ($auth !== true) return $auth;
+
+// Múltiples permisos alternativos
+$auth = $this->authorize($request, permission: ['users.view', 'users.create']);
 if ($auth !== true) return $auth;
 ```
+
+### Logging de fallos de autorización
+
+Todos los handlers usan `deny()` del `AbstractHandler`. Cada fallo de autorización genera un log `warning` con el canal `auth_failure` que incluye:
+
+```json
+{
+    "reason": "Forbidden.",
+    "status": 403,
+    "user_id": "uuid-del-usuario",
+    "ip": "192.168.1.1",
+    "path": "api/users",
+    "method": "GET"
+}
+```
+
+El `request_id` del middleware `SetRequestId` se incluye automáticamente en el contexto de todos los logs del request.
 
 ### Agregar un nuevo handler de autorización
 
 1. Crear la clase en `app/Auth/Chain/` extendiendo `AbstractHandler`.
 2. Implementar `handle(Request $request): true|JsonResponse`.
-3. Llamar `$this->passToNext($request)` cuando la validación pase.
-4. Agregar el parámetro correspondiente en `Controller::authorize()` si aplica.
+3. Usar `$this->deny($request, 'mensaje', $statusCode)` para rechazar (loggea automáticamente).
+4. Llamar `$this->passToNext($request)` cuando la validación pase.
+5. Agregar el parámetro correspondiente en `Controller::authorize()` si aplica.
 
 ---
 
@@ -298,7 +339,7 @@ if ($auth !== true) return $auth;
 
 ### Propósito
 
-Validar las credenciales de login en pasos atómicos e independientes, con rate limiting integrado. Se construye y ejecuta directamente en `AuthController::login()`.
+Validar las credenciales de login en pasos atómicos e independientes, con rate limiting integrado y protección contra timing attacks. Se construye y ejecuta directamente en `AuthController::login()`.
 
 ### Pipeline
 
@@ -306,16 +347,13 @@ Validar las credenciales de login en pasos atómicos e independientes, con rate 
 Request (email + password)
    │
    ▼
-EmailExistsHandler ── email no existe en DB? ──→ 422 (no registra intento)
-   │ pasa — adjunta _resolved_user al request
-   ▼
 RateLimitHandler ── demasiados intentos? ──→ 429 + Retry-After header
    │ pasa
    ▼
-PasswordMatchesHandler ── password incorrecto? ──→ 401 (registra intento)
-   │ pasa
+CredentialsValidationHandler ── credenciales inválidas? ──→ 401 (registra intento)
+   │ pasa — adjunta _resolved_user al request
    ▼
-AccountActiveHandler ── is_active === false? ──→ 403 (registra intento)
+AccountActiveHandler ── is_active === false? ──→ 403
    │ pasa
    ▼
  true → emitir token Sanctum + limpiar contador Redis
@@ -323,15 +361,9 @@ AccountActiveHandler ── is_active === false? ──→ 403 (registra intento
 
 ### Handlers de autenticación
 
-#### `EmailExistsHandler`
-
-Busca el usuario por email. Si no existe, retorna 422 con mensaje genérico (evita enumerar usuarios). Si existe, adjunta el modelo `User` al request bajo la clave `_resolved_user`.
-
-> Retorna 422 (no 401) intencionalmente para que `AuthController` no registre el intento en Redis cuando el email es desconocido.
-
 #### `RateLimitHandler`
 
-Verifica el contador de intentos fallidos en Redis. La key es `login-attempts:{email}`.
+Verifica el contador de intentos fallidos en Redis **antes** de validar credenciales. La key es un hash SHA256 de `email|ip` para evitar enumerar emails en Redis.
 
 Configuración vía `.env`:
 
@@ -351,13 +383,21 @@ Respuesta al superar el límite:
 
 Con header HTTP: `Retry-After: 900`.
 
-#### `PasswordMatchesHandler`
+> **Producción:** Redis es **obligatorio** como driver de cache. El rate limiting con driver `file` no es atómico en entornos con múltiples workers. La aplicación lanza `RuntimeException` al arrancar si `CACHE_STORE !== redis` en `APP_ENV=production`.
 
-Verifica el password usando `password_verify()` nativo de PHP (no `Hash::check()`). Esto mantiene el handler independiente del IoC container, permitiendo testearlo en la suite Unit sin arrancar el framework.
+#### `CredentialsValidationHandler`
+
+Valida email y password en un único handler. Implementa protección contra **timing attacks**: si el email no existe, ejecuta igualmente un `password_verify()` contra un hash dummy para que el tiempo de respuesta sea indistinguible del caso donde el email sí existe.
+
+Usa `password_verify()` nativo de PHP (no `Hash::check()`) para mantener independencia del IoC container y permitir tests unitarios sin arrancar el framework.
+
+Si las credenciales son válidas, adjunta el modelo `User` al request bajo la clave `_resolved_user`.
 
 #### `AccountActiveHandler`
 
 Verifica la columna `is_active`. Se evalúa al final de la cadena para no revelar si una cuenta inactiva existe antes de confirmar que las credenciales son correctas.
+
+Incluye validación defensiva: si `_resolved_user` no es una instancia de `User` (orden incorrecto en la cadena), retorna 403 en lugar de lanzar una excepción.
 
 ---
 
@@ -383,20 +423,29 @@ class User extends Authenticatable { ... }
 **`User`** — métodos RBAC:
 
 ```php
+// Verificación simple (string)
+public function hasRole(string $role): bool;
+public function hasPermission(string $permission): bool;
+
+// Verificación OR (arrays) — para AnyRoleOrPermissionHandler
+public function hasAnyRole(array $roles): bool;
+public function hasAnyPermission(array $permissions): bool;
+```
+
+Todos los métodos usan **cache por request** para evitar queries repetidas en el mismo ciclo de vida:
+
+```php
+protected array $roleCache       = [];
+protected array $permissionCache = [];
+
 public function hasRole(string $role): bool
 {
-    return $this->roles()->where('name', $role)->exists();
-}
-
-public function hasPermission(string $permission): bool
-{
-    return $this->roles()
-        ->whereHas('permissions', fn ($q) => $q->where('permissions.name', $permission))
-        ->exists();
+    return $this->roleCache[$role]
+        ??= $this->roles()->where('name', $role)->exists();
 }
 ```
 
-> **Consideración de rendimiento:** `hasPermission()` hace un `whereHas` encadenado. Si un usuario tiene muchos roles, considerar eager loading con `$user->load('roles.permissions')` antes de llamar al pipeline.
+> **Consideración de rendimiento:** `hasPermission()` hace un `whereHas` encadenado. El cache por request evita queries duplicadas dentro de un mismo request, pero en producción con usuarios con muchos roles, considerar eager loading con `$user->load('roles.permissions')` antes de llamar al pipeline.
 
 ### Seeders
 
@@ -420,7 +469,9 @@ Contraseña de todos: `password`
 |---|---|---|---|
 | `POST` | `/api/login` | — | Login con email y password |
 | `POST` | `/api/logout` | Bearer token | Revoca el token actual |
+| `POST` | `/api/refresh` | Bearer token | Renueva el token actual (revoca el viejo, emite uno nuevo) |
 | `GET` | `/api/user` | Bearer token | Datos del usuario autenticado |
+| `POST` | `/api/user/password` | Bearer token | Cambiar contraseña (requiere contraseña actual) |
 
 **Login — request:**
 
@@ -445,17 +496,38 @@ Contraseña de todos: `password`
 }
 ```
 
+**Refresh — respuesta exitosa (200):**
+
+```json
+{
+    "token": "2|xyz789...",
+    "token_type": "Bearer"
+}
+```
+
+**Cambio de contraseña — request:**
+
+```json
+{
+    "current_password": "password",
+    "password": "nueva-contraseña",
+    "password_confirmation": "nueva-contraseña"
+}
+```
+
 ### Gestión de usuarios
 
-Todas las rutas requieren `Authorization: Bearer {token}` y rol `admin`.
+Todas las rutas requieren `Authorization: Bearer {token}`. El acceso se concede si el usuario tiene el rol `admin` **o** el permiso correspondiente (lógica OR).
 
-| Método | Ruta | Permiso adicional | Descripción |
+| Método | Ruta | Rol o Permiso | Descripción |
 |---|---|---|---|
-| `GET` | `/api/users` | — | Lista paginada (15/página) |
-| `POST` | `/api/users` | — | Crear usuario |
-| `GET` | `/api/users/{id}` | — | Ver usuario |
-| `PUT` | `/api/users/{id}` | — | Actualizar usuario |
-| `DELETE` | `/api/users/{id}` | `users.delete` | Eliminar usuario |
+| `GET` | `/api/users` | admin \| `users.view` | Lista paginada (15/página, máx 100) |
+| `POST` | `/api/users` | admin \| `users.create` | Crear usuario |
+| `GET` | `/api/users/{uuid}` | admin \| `users.view` | Ver usuario |
+| `PUT` | `/api/users/{uuid}` | admin \| `users.update` | Actualizar usuario |
+| `DELETE` | `/api/users/{uuid}` | admin \| `users.delete` | Eliminar usuario |
+
+> El parámetro `per_page` está limitado a un máximo de 100. Valores mayores se truncan automáticamente.
 
 ---
 
@@ -506,13 +578,13 @@ Todos los modelos exponen un `uuid` público. Los IDs internos nunca se exponen 
 
 ### Endpoints de diseños
 
-Los diseños son imágenes subidas por usuarios autenticados y asociadas a un producto. El upload está limitado a 10 req/min (`throttle:uploads`).
+Los diseños son imágenes subidas por usuarios autenticados y asociadas a un producto. El upload está limitado a 10 req/min (`throttle:uploads`) y requiere el permiso `designs.create`.
 
 | Método | Ruta | Auth | Descripción |
 |---|---|---|---|
 | `GET` | `/api/designs` | — | Lista paginada de diseños activos |
 | `GET` | `/api/designs/{uuid}` | — | Ver diseño |
-| `POST` | `/api/designs` | Bearer token (throttle:uploads) | Subir diseño (multipart/form-data) |
+| `POST` | `/api/designs` | Bearer token + `designs.create` (throttle:uploads) | Subir diseño (multipart/form-data) |
 | `DELETE` | `/api/designs/{uuid}` | admin + `catalog.manage` | Eliminar diseño y archivo |
 
 **Subir diseño — request (multipart/form-data):**
@@ -643,9 +715,30 @@ El middleware `SecurityHeaders` (`app/Http/Middleware/SecurityHeaders.php`) agre
 |---|---|
 | `X-Frame-Options` | `DENY` |
 | `X-Content-Type-Options` | `nosniff` |
-| `X-XSS-Protection` | `1; mode=block` |
+| `Content-Security-Policy` | `default-src 'none'; frame-ancestors 'none'` |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
+
+> `X-XSS-Protection` fue eliminado por estar deprecado en todos los browsers modernos y poder introducir vulnerabilidades XSS en browsers antiguos. Se reemplazó por `Content-Security-Policy`.
+
+### Correlation ID
+
+El middleware `SetRequestId` (`app/Http/Middleware/SetRequestId.php`) asigna un identificador único a cada request:
+
+- Reutiliza el header `X-Request-ID` si el cliente lo envía (útil para tracing distribuido).
+- Genera un UUID v4 si no viene en el request.
+- Agrega el ID al contexto de todos los logs del request (`Log::withContext()`).
+- Retorna el ID en el header `X-Request-ID` de la respuesta.
+
+### Tokens Sanctum
+
+Los tokens tienen expiración configurable vía variable de entorno:
+
+```dotenv
+SANCTUM_TOKEN_EXPIRATION=1440  # minutos (24h por defecto)
+```
+
+Para renovar un token sin cerrar sesión, usar `POST /api/refresh`. El endpoint revoca el token actual y emite uno nuevo.
 
 ### CORS
 
@@ -660,11 +753,15 @@ Configurado en `AppServiceProvider::boot()`:
 | `api` | 60 req/min por usuario o IP | Todas las rutas API |
 | `uploads` | 10 req/min por usuario o IP | `POST /api/designs` |
 
+> **Producción:** Redis es **obligatorio** como driver de cache para rate limiting. La aplicación lanza `RuntimeException` al arrancar si `CACHE_STORE !== redis` en `APP_ENV=production`.
+
 ### Prevención de fugas de datos
 
 La suite `SecurityLeakTest` verifica que ningún endpoint exponga:
 - IDs autoincrementales (`"id": 123`)
 - Hashes de contraseñas (`$2y$10$...`)
+
+Los errores del gateway de Transbank se loggean internamente y nunca se exponen al cliente. El cliente recibe siempre un mensaje genérico.
 
 ---
 
@@ -794,7 +891,7 @@ DB_DATABASE=laravel_api
 DB_USERNAME=laravel
 DB_PASSWORD=secret
 
-# Redis
+# Redis (obligatorio en producción para rate limiting)
 CACHE_STORE=redis
 REDIS_HOST=127.0.0.1   # En Docker, el contenedor usa REDIS_HOST=redis
 REDIS_PORT=6379
@@ -804,12 +901,13 @@ REDIS_PASSWORD=null
 LOGIN_MAX_ATTEMPTS=5
 LOGIN_LOCKOUT_MINUTES=15
 
+# Sanctum — expiración de tokens (en minutos)
+SANCTUM_TOKEN_EXPIRATION=1440   # 24h por defecto. null = sin expiración (no recomendado en producción)
+
 # Transbank (solo producción)
 TRANSBANK_API_KEY=
 TRANSBANK_COMMERCE_CODE=
-
-# Sanctum (tokens sin expiración por defecto)
-# Para activar expiración: 'expiration' => 60 * 24 en config/sanctum.php
+TRANSBANK_API_KEY_SECRET=       # Requerido para verificación de firma TBK_MAC
 ```
 
 ---
@@ -822,19 +920,33 @@ El patrón CoR permite construir pipelines de validación composables y testable
 
 ### `_resolved_user` en el request
 
-`EmailExistsHandler` adjunta el modelo `User` al request con `$request->merge(['_resolved_user' => $user])`. Esto evita que `PasswordMatchesHandler` y `AccountActiveHandler` hagan una segunda consulta a la base de datos. Es una convención interna de la cadena de autenticación — no es un campo del request HTTP.
+`CredentialsValidationHandler` adjunta el modelo `User` al request con `$request->merge(['_resolved_user' => $user])`. Esto evita que `AccountActiveHandler` haga una segunda consulta a la base de datos. Es una convención interna de la cadena de autenticación — no es un campo del request HTTP.
+
+`AccountActiveHandler` valida defensivamente que `_resolved_user` sea una instancia de `User` antes de usarlo. Si no lo es (orden incorrecto en la cadena), retorna 403 en lugar de lanzar una excepción.
 
 ### `password_verify()` en lugar de `Hash::check()`
 
-`PasswordMatchesHandler` usa la función nativa de PHP para mantener independencia del IoC container. `Hash::check()` requiere que el container esté inicializado, lo que impide testear el handler en la suite Unit con mocks simples.
+`CredentialsValidationHandler` usa la función nativa de PHP para mantener independencia del IoC container. `Hash::check()` requiere que el container esté inicializado, lo que impide testear el handler en la suite Unit con mocks simples.
+
+### Protección contra timing attacks en login
+
+`CredentialsValidationHandler` ejecuta `password_verify()` contra un hash dummy cuando el email no existe en la base de datos. Esto hace que el tiempo de respuesta sea indistinguible del caso donde el email sí existe, previniendo enumeración de usuarios por diferencias de tiempo.
+
+### Throttle key hasheada con SHA256
+
+La key de Redis para rate limiting usa `hash('sha256', email|ip)` en lugar del email en texto plano. Esto previene que alguien con acceso a Redis pueda enumerar qué emails han intentado hacer login.
 
 ### Orden de `AccountActiveHandler` al final
 
 Verificar si la cuenta está activa al final (después de validar credenciales) evita revelar la existencia de cuentas inactivas. Un atacante que recibe 403 sabe que las credenciales son correctas, pero eso es preferible a revelar si el email existe.
 
-### Rate limiting solo cuando el email existe
+### Tokens Sanctum con expiración
 
-`AuthController` no llama a `$rateLimiter->hit()` cuando `EmailExistsHandler` retorna 422. Registrar intentos para emails inexistentes permitiría a un atacante bloquear cuentas sin conocer la contraseña (ataque de denegación de servicio).
+Los tokens tienen TTL configurable (`SANCTUM_TOKEN_EXPIRATION`). Para renovar un token sin cerrar sesión, usar `POST /api/refresh` — revoca el token actual y emite uno nuevo. Esto permite implementar rotación de tokens sin forzar re-login.
+
+### Autorización OR con arrays
+
+`Controller::authorize()` acepta `string|array` para `role` y `permission`. Cuando se pasan arrays, usa `AnyRoleOrPermissionHandler` que implementa lógica OR: el acceso se concede si el usuario tiene **alguno** de los roles o permisos indicados. Esto permite patrones como "admin o cualquier usuario con el permiso específico".
 
 ### UUIDs públicos en lugar de IDs autoincrementales
 
