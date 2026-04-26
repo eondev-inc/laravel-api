@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Design;
+use App\Models\Product;
+use App\Models\ProductVariation;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,18 +20,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Generar datos de prueba para el catálogo y la tienda
-        \App\Models\Category::factory(5)->create()->each(function ($category) {
-            \App\Models\Product::factory(10)->create([
+        Category::factory(5)->create()->each(function ($category) {
+            Product::factory(10)->create([
                 'category_id' => $category->id,
             ])->each(function ($product) {
                 // Generar algunas variaciones (talles/colores) por producto
-                \App\Models\ProductVariation::factory(3)->create([
+                ProductVariation::factory(3)->create([
                     'product_id' => $product->id,
                 ]);
             });
         });
 
         // Generar diseños
-        \App\Models\Design::factory(20)->create();
+        Design::factory(20)->create();
     }
 }

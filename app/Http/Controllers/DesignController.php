@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DesignController extends Controller
 {
@@ -46,7 +47,7 @@ class DesignController extends Controller
 
         $file = $request->file('image');
         $extension = strtolower($file->guessExtension() ?? 'png');
-        $path = Storage::disk('public')->putFileAs('designs', $file, \Illuminate\Support\Str::random(40).'.'.$extension);
+        $path = Storage::disk('public')->putFileAs('designs', $file, Str::random(40).'.'.$extension);
         $url = Storage::disk('public')->url($path);
 
         $design = Design::create([
