@@ -174,6 +174,42 @@ describe('DELETE /api/designs/{design}', function () {
     });
 });
 
+// ─── DesignResource — file_url presigned URL ─────────────────────────────────
+
+describe('DesignResource file_url', function () {
+    it('returns a non-empty string for file_url when design has a file_path', function () {
+        $user = User::factory()->create();
+        $user->roles()->attach($this->designerRole->id);
+        $product = Product::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $file = UploadedFile::fake()->create('design.png', 100, 'image/png');
+
+        $response = $this->postJson('/api/designs', [
+            'name' => 'Presigned Design',
+            'product_id' => $product->uuid,
+            'image' => $file,
+        ])->assertStatus(201);
+
+        $fileUrl = $response->json('data.file_url');
+
+        expect($fileUrl)->toBeString()->not->toBeEmpty();
+    });
+
+    it('returns a non-empty string file_url for each design in the list', function () {
+        $filePath = 'designs/some-file.png';
+        Storage::disk('s3_private')->put($filePath, 'fake-content');
+        Design::factory()->create(['file_path' => $filePath, 'is_active' => true]);
+
+        $response = $this->getJson('/api/designs')->assertStatus(200);
+
+        $item = collect($response->json('data'))->first();
+
+        expect($item['file_url'])->toBeString()->not->toBeEmpty();
+    });
+});
+
 // ─── POST /api/designs — verificaciones adicionales de almacenamiento ─────────
 
 describe('POST /api/designs — s3_private storage', function () {

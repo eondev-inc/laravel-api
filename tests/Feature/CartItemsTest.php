@@ -6,7 +6,12 @@ use App\Models\Design;
 use App\Models\Product;
 use App\Models\ProductVariation;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
+
+beforeEach(function () {
+    Storage::fake('s3_private');
+});
 
 // ─── POST /api/cart/items ─────────────────────────────────────────────────────
 
