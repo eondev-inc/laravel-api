@@ -5,7 +5,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "9a52a7a1-c66a-401f-9feb-eb74a416c943",
+                    "id": "625f34c2-de78-49ba-b850-9ff11ec991be",
                     "name": "/user",
                     "request": {
                         "name": "/user",
@@ -32,7 +32,7 @@
                     },
                     "response": [
                         {
-                            "id": "7e6c02de-6f26-4c1a-8bb9-10d2b403453b",
+                            "id": "196084a7-5df5-40f0-8983-f0347fd54290",
                             "name": "`User`",
                             "originalRequest": {
                                 "url": {
@@ -67,7 +67,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "9d702656-5541-4921-afa4-3cde8f9f1e81",
+                            "id": "fcedd921-b5fa-47a2-91ae-bc3362f14b5d",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -106,6 +106,209 @@
                     "protocolProfileBehavior": {
                         "disableBodyPruning": true
                     }
+                },
+                {
+                    "name": "password",
+                    "description": "",
+                    "item": [
+                        {
+                            "id": "49b81b46-5184-4b30-b1a3-658a550dbe23",
+                            "name": "POST /api/user/password",
+                            "request": {
+                                "name": "POST /api/user/password",
+                                "description": {
+                                    "content": "Actualiza la contraseña del usuario autenticado.\nRequiere la contraseña actual para confirmar identidad antes de cambiarla.\nRequiere middleware auth:sanctum en la ruta.",
+                                    "type": "text/plain"
+                                },
+                                "url": {
+                                    "path": [
+                                        "user",
+                                        "password"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"current_password\": \"<string>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "auth": null
+                            },
+                            "response": [
+                                {
+                                    "id": "0ed95e88-2c7b-495f-9c53-ff9f2a01cb38",
+                                    "name": "200",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "user",
+                                                "password"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": []
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "POST",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"current_password\": \"<string>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "headerFamily": "json",
+                                                    "language": "json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "status": "OK",
+                                    "code": 200,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "2f430984-6e3f-4946-a04b-bce9973002b6",
+                                    "name": "Unauthenticated",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "user",
+                                                "password"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": []
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "POST",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"current_password\": \"<string>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "headerFamily": "json",
+                                                    "language": "json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "status": "Unauthorized",
+                                    "code": 401,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "2fc31b42-3ba7-4c44-9a0a-11397d3d3901",
+                                    "name": "Validation error",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "user",
+                                                "password"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": []
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "POST",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"current_password\": \"<string>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "headerFamily": "json",
+                                                    "language": "json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                                    "code": 422,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\",\n  \"errors\": {\n    \"key_0\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                }
+                            ],
+                            "event": [],
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -114,7 +317,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "5e8b61aa-7330-4402-a1f9-65c5ee9e2699",
+                    "id": "21d97cd8-6827-46ae-b860-29d2e16d9faa",
                     "name": "POST /api/login",
                     "request": {
                         "name": "POST /api/login",
@@ -157,7 +360,7 @@
                     },
                     "response": [
                         {
-                            "id": "77c8115d-4c2c-4498-b918-c5c503d35074",
+                            "id": "6534171a-d33a-474b-9b5d-ddea65f5df4e",
                             "name": "200",
                             "originalRequest": {
                                 "url": {
@@ -205,7 +408,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "79635703-d36d-43d6-b195-613ac792e7db",
+                            "id": "34271526-e0a1-4372-b5e9-5d6deeb47ff5",
                             "name": "Validation error",
                             "originalRequest": {
                                 "url": {
@@ -265,12 +468,12 @@
             "description": "",
             "item": [
                 {
-                    "id": "a51df02b-7b09-427f-bc60-00e318e4cec6",
+                    "id": "088449ca-90bc-4a36-9435-15875b607063",
                     "name": "POST /api/logout",
                     "request": {
                         "name": "POST /api/logout",
                         "description": {
-                            "content": "Revoca el token actual del usuario autenticado.\nRequiere middleware auth:sanctum en la ruta.",
+                            "content": "Revoca el token actual del usuario autenticado.\nRequiere middleware auth:sanctum en la ruta.\nValidación defensiva: verifica que exista un token activo antes de eliminarlo.",
                             "type": "text/plain"
                         },
                         "url": {
@@ -295,7 +498,7 @@
                     },
                     "response": [
                         {
-                            "id": "10af996d-8725-424f-a344-e86d0e826f22",
+                            "id": "3d23d238-a48c-456c-93cf-8a36a389f88e",
                             "name": "200",
                             "originalRequest": {
                                 "url": {
@@ -330,7 +533,42 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ee7d4e9f-ebf8-40aa-971f-2c0c2e5aca9d",
+                            "id": "e28fff4a-56df-4be2-94de-2cb27f0b50a6",
+                            "name": "400",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "logout"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {}
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"message\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "b566db59-21b4-4af7-ad82-2bdc87da1082",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -373,11 +611,123 @@
             ]
         },
         {
+            "name": "refresh",
+            "description": "",
+            "item": [
+                {
+                    "id": "4b8e006e-cfd5-4a61-8bec-6a09b36b610e",
+                    "name": "POST /api/refresh",
+                    "request": {
+                        "name": "POST /api/refresh",
+                        "description": {
+                            "content": "Revoca el token actual y emite uno nuevo.\nRequiere middleware auth:sanctum en la ruta.",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "refresh"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {},
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "7c95a964-f930-42ac-a39b-25ec51c50aff",
+                            "name": "200",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "refresh"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"token\": \"<string>\",\n  \"token_type\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "cadfa2a6-4201-4593-9d39-33c9003d032f",
+                            "name": "Unauthenticated",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "refresh"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {}
+                            },
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"message\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
             "name": "cart",
             "description": "",
             "item": [
                 {
-                    "id": "9fe925b3-fd12-483c-b935-4a413367b763",
+                    "id": "54f2d0d3-f206-4d85-b4c2-130100513415",
                     "name": "GET /api/cart — public (guest or authenticated)",
                     "request": {
                         "name": "GET /api/cart — public (guest or authenticated)",
@@ -404,7 +754,7 @@
                     },
                     "response": [
                         {
-                            "id": "b8215c38-5a56-4a58-b98d-ec4ca0906d6c",
+                            "id": "412aff6e-5b58-420c-aa15-56c83413d3c4",
                             "name": "`CartResource`",
                             "originalRequest": {
                                 "url": {
@@ -434,12 +784,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
+                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "88fd66ed-3d62-4bd8-bd44-5103cf1dd0ee",
+                            "id": "e61c2728-5935-4b25-ac27-e12de04f4911",
                             "name": "400",
                             "originalRequest": {
                                 "url": {
@@ -484,7 +834,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "c0c7d9e6-6a58-4e85-949c-08ab28c6f276",
+                            "id": "41c76c7d-2978-47a7-948c-135e3f4d9a16",
                             "name": "POST /api/cart/items — add item to cart",
                             "request": {
                                 "name": "POST /api/cart/items — add item to cart",
@@ -525,7 +875,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "0a19d2de-9260-432a-9ae9-eaed4150f9a8",
+                                    "id": "f4be0bb1-f8f6-4095-b469-8a128ef01ad8",
                                     "name": "`CartResource`",
                                     "originalRequest": {
                                         "url": {
@@ -569,12 +919,12 @@
                                             "value": "application/json"
                                         }
                                     ],
-                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
+                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
                                     "cookie": [],
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "16bfbdcf-a300-45cc-8feb-6cc1580e4239",
+                                    "id": "4f7acbdc-24b2-4028-9543-e8b5b457d466",
                                     "name": "400",
                                     "originalRequest": {
                                         "url": {
@@ -623,7 +973,56 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "cf0ae7f9-1c0b-46e1-ba10-6d0822c0ec6c",
+                                    "id": "178499d5-7c73-4eca-9118-28b1c21a7d6c",
+                                    "name": "403",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "cart",
+                                                "items"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": []
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "POST",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"product_variation_id\": \"<string>\",\n  \"design_id\": \"<string,null>\",\n  \"quantity\": \"<integer>\"\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "headerFamily": "json",
+                                                    "language": "json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "status": "Forbidden",
+                                    "code": 403,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "817e65c3-e9f1-4590-b066-8d8cd496604d",
                                     "name": "Validation error",
                                     "originalRequest": {
                                         "url": {
@@ -682,7 +1081,7 @@
                             "description": "",
                             "item": [
                                 {
-                                    "id": "2c5917ef-abb2-4027-8716-cf1b11bd892a",
+                                    "id": "ef185c97-d2e2-4b2f-8eca-e8b4a09a8f22",
                                     "name": "PUT /api/cart/items/{cartItem} — update item quantity",
                                     "request": {
                                         "name": "PUT /api/cart/items/{cartItem} — update item quantity",
@@ -700,7 +1099,7 @@
                                             "variable": [
                                                 {
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "cartItem",
                                                     "disabled": false,
                                                     "description": {
@@ -735,7 +1134,7 @@
                                     },
                                     "response": [
                                         {
-                                            "id": "6e8a3712-0cfc-43a4-bdd5-35d465c81e05",
+                                            "id": "f3dd0986-7833-4f20-a020-82f092d6e9f1",
                                             "name": "`CartResource`",
                                             "originalRequest": {
                                                 "url": {
@@ -756,7 +1155,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -791,12 +1190,12 @@
                                                     "value": "application/json"
                                                 }
                                             ],
-                                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
+                                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
                                             "cookie": [],
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "8a0505cc-6820-4e28-845b-1e5b9827068b",
+                                            "id": "08fd1af6-99b9-46f9-9862-22eb117e1dc4",
                                             "name": "400",
                                             "originalRequest": {
                                                 "url": {
@@ -817,7 +1216,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -857,7 +1256,7 @@
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "09fe577e-fde8-4bf6-8f2b-5c48b7797104",
+                                            "id": "6a6396e4-2580-4bc1-a9de-afe126798dc2",
                                             "name": "403",
                                             "originalRequest": {
                                                 "url": {
@@ -878,7 +1277,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -918,7 +1317,7 @@
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "c8e31d3c-fd63-4585-a8bb-aee2c906c097",
+                                            "id": "77039faf-4e1d-4bdb-8a27-abc439166137",
                                             "name": "Not found",
                                             "originalRequest": {
                                                 "url": {
@@ -939,7 +1338,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -979,7 +1378,7 @@
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "2b67745d-b6d3-4324-992f-5b35ab983db7",
+                                            "id": "5b712f0f-ee6d-4cb5-97ef-d95b5d733ce0",
                                             "name": "Validation error",
                                             "originalRequest": {
                                                 "url": {
@@ -1000,7 +1399,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -1046,7 +1445,7 @@
                                     }
                                 },
                                 {
-                                    "id": "c53825cd-b346-4a7e-a280-bad84f15ed35",
+                                    "id": "af681adb-97e6-4f56-85c5-def2fae057ab",
                                     "name": "DELETE /api/cart/items/{cartItem} — remove item",
                                     "request": {
                                         "name": "DELETE /api/cart/items/{cartItem} — remove item",
@@ -1064,7 +1463,7 @@
                                             "variable": [
                                                 {
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "cartItem",
                                                     "disabled": false,
                                                     "description": {
@@ -1086,7 +1485,7 @@
                                     },
                                     "response": [
                                         {
-                                            "id": "fc3a1489-86fe-4def-9262-2af411aecbeb",
+                                            "id": "7a0bc755-068a-4f59-a357-6ac6f0a28ddf",
                                             "name": "`CartResource`",
                                             "originalRequest": {
                                                 "url": {
@@ -1107,7 +1506,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -1129,12 +1528,12 @@
                                                     "value": "application/json"
                                                 }
                                             ],
-                                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
+                                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
                                             "cookie": [],
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "5fe8c8e1-77a6-4c54-88b9-9e33e271f481",
+                                            "id": "a5713c6c-efd3-4546-bc8a-c7aa54939c6d",
                                             "name": "400",
                                             "originalRequest": {
                                                 "url": {
@@ -1155,7 +1554,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -1182,7 +1581,7 @@
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "3575163d-3e67-4782-9247-49c3bf462808",
+                                            "id": "cc239c32-543f-4397-97f4-38f9e6f55e4b",
                                             "name": "403",
                                             "originalRequest": {
                                                 "url": {
@@ -1203,7 +1602,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -1230,7 +1629,7 @@
                                             "_postman_previewlanguage": "json"
                                         },
                                         {
-                                            "id": "dbbaab27-9da0-45df-9888-7a5a5bf2c94f",
+                                            "id": "84ebcd1b-6113-4ee4-bb3e-3c3fc3d564e3",
                                             "name": "Not found",
                                             "originalRequest": {
                                                 "url": {
@@ -1251,7 +1650,7 @@
                                                                 "type": "text/plain"
                                                             },
                                                             "type": "any",
-                                                            "value": "<integer>",
+                                                            "value": "<string>",
                                                             "key": "cartItem"
                                                         }
                                                     ]
@@ -1292,7 +1691,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "77fe62d9-47b6-4013-b5b1-4590b5e92472",
+                            "id": "5b79d99c-ee4b-4ec2-bd64-de503c72f40e",
                             "name": "POST /api/cart/merge — merge guest cart into authenticated user cart",
                             "request": {
                                 "name": "POST /api/cart/merge — merge guest cart into authenticated user cart",
@@ -1320,7 +1719,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "bcdce855-f6f8-4800-b4fd-365e13cf712b",
+                                    "id": "ed2508bf-2017-4038-8d12-5ba8e4aa2e1a",
                                     "name": "`CartResource`",
                                     "originalRequest": {
                                         "url": {
@@ -1351,12 +1750,12 @@
                                             "value": "application/json"
                                         }
                                     ],
-                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<string>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string>\",\n          \"stock\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
+                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"quantity\": \"<integer>\",\n        \"unit_price\": \"<string>\",\n        \"subtotal\": \"<string>\",\n        \"product_variation_id\": \"<string>\",\n        \"variation\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"price\": \"<string,null>\",\n          \"stock\": \"<integer>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\"\n        },\n        \"design_id\": \"<string>\",\n        \"design\": {\n          \"id\": \"<string>\",\n          \"name\": \"<string>\",\n          \"file_url\": \"<string,null>\",\n          \"file_extension\": \"<string>\",\n          \"is_active\": \"<string>\",\n          \"created_at\": \"<string>\",\n          \"product_id\": \"<string>\"\n        }\n      }\n    ],\n    \"total\": \"<string>\"\n  }\n}",
                                     "cookie": [],
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "0986eb96-7952-49fd-b6f0-6bf7652e79fa",
+                                    "id": "ad642d7d-33a2-47d6-801b-8d74fb1e0b60",
                                     "name": "400",
                                     "originalRequest": {
                                         "url": {
@@ -1392,7 +1791,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "a0e64031-ef3a-4537-8b94-8bbd3b284816",
+                                    "id": "93f627e0-3bad-4962-9278-5de0e2f764f3",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -1428,7 +1827,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "1073e18a-c3eb-4856-9b62-e6813c3f1e99",
+                                    "id": "a5f95dbd-d273-42ca-8ef2-b7e5203bf281",
                                     "name": "404",
                                     "originalRequest": {
                                         "url": {
@@ -1478,7 +1877,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "da551d0d-605b-4b2c-962f-8f23152efbb9",
+                    "id": "43e42c53-b292-4d52-9da1-f08968bd82ea",
                     "name": "GET /api/categories — public",
                     "request": {
                         "name": "GET /api/categories — public",
@@ -1505,7 +1904,7 @@
                     },
                     "response": [
                         {
-                            "id": "fc370e32-2153-4871-baec-9a69898677df",
+                            "id": "83f45584-edb3-49b1-b914-0930463c23f5",
                             "name": "Paginated set of `CategoryResource`",
                             "originalRequest": {
                                 "url": {
@@ -1546,7 +1945,7 @@
                     }
                 },
                 {
-                    "id": "952a6819-fbe0-4181-8938-7b85131fad90",
+                    "id": "d2c37df8-e56f-43af-86dd-85c919864b6c",
                     "name": "POST /api/categories — admin only",
                     "request": {
                         "name": "POST /api/categories — admin only",
@@ -1586,7 +1985,7 @@
                     },
                     "response": [
                         {
-                            "id": "09bc0c04-b6e9-43a7-bca7-09d133d7d747",
+                            "id": "a79c2096-2953-4391-8e08-395bd64a9bdd",
                             "name": "`CategoryResource`",
                             "originalRequest": {
                                 "url": {
@@ -1634,7 +2033,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "f6ba8f0f-4c78-405b-9c8b-4cf97459de47",
+                            "id": "b5838fda-6b5a-4b23-98a9-c7317a6d7a62",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -1682,7 +2081,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "3bda79ff-2832-4ddf-b2ff-19fc547654f7",
+                            "id": "03320475-a266-4570-8b39-2ec83c336845",
                             "name": "Authorization error",
                             "originalRequest": {
                                 "url": {
@@ -1730,7 +2129,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a1269931-410c-4086-b409-11c89dae7396",
+                            "id": "cc8c3a8e-d635-4772-96fc-ba17251ebfed",
                             "name": "Validation error",
                             "originalRequest": {
                                 "url": {
@@ -1788,7 +2187,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "4d9d54d9-eabf-49cc-b8de-7052eae034cb",
+                            "id": "483e8bc5-4a7b-4d43-bcbd-4edc38a3ed12",
                             "name": "GET /api/categories/{category} — public",
                             "request": {
                                 "name": "GET /api/categories/{category} — public",
@@ -1805,7 +2204,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "category",
                                             "disabled": false,
                                             "description": {
@@ -1827,7 +2226,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "e860d753-135a-41f7-862f-9f26d99c81b2",
+                                    "id": "5e8bf064-6f89-4621-88c5-3f144cc94e2b",
                                     "name": "`CategoryResource`",
                                     "originalRequest": {
                                         "url": {
@@ -1847,7 +2246,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -1874,7 +2273,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "31520618-d64a-4d60-b957-bd1bf552b50c",
+                                    "id": "9bca9b61-49cb-4b95-bdb0-f32cb0a88428",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -1894,7 +2293,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -1927,7 +2326,7 @@
                             }
                         },
                         {
-                            "id": "6fe9ce4b-577d-4217-a482-0c7f885983d1",
+                            "id": "363cbb63-8fff-4a38-af17-ede422eba6d4",
                             "name": "PUT /api/categories/{category} — admin only",
                             "request": {
                                 "name": "PUT /api/categories/{category} — admin only",
@@ -1944,7 +2343,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "category",
                                             "disabled": false,
                                             "description": {
@@ -1979,7 +2378,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "988ca80f-97ec-4822-87ed-3f60a8492702",
+                                    "id": "6e0ff4df-2f84-4cca-9cc1-2890ffc33b20",
                                     "name": "`CategoryResource`",
                                     "originalRequest": {
                                         "url": {
@@ -1999,7 +2398,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2039,7 +2438,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "829d0292-c3d2-4d3e-af59-b8fca87cb4c4",
+                                    "id": "3246cbf7-9957-4f06-9e7d-e9921a6722c0",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -2059,7 +2458,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2099,7 +2498,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "1c6c2702-0bc5-4574-9563-f7d7fbf61e3b",
+                                    "id": "53861bb6-7f26-4aa7-9055-82b08dc474d9",
                                     "name": "Authorization error",
                                     "originalRequest": {
                                         "url": {
@@ -2119,7 +2518,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2159,7 +2558,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "c59f6632-ee8d-4df2-a6e7-0125abc8e088",
+                                    "id": "b5b62e1a-822d-4f9b-ac31-be86513230e8",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -2179,7 +2578,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2219,7 +2618,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "b2bf379c-b077-41e3-a5bc-e7f6dc701acb",
+                                    "id": "3296924b-8148-41cd-8a4e-d12ee89d3342",
                                     "name": "Validation error",
                                     "originalRequest": {
                                         "url": {
@@ -2239,7 +2638,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2285,7 +2684,7 @@
                             }
                         },
                         {
-                            "id": "55c65844-1e90-48f7-a8b1-ae3d1a4727bb",
+                            "id": "c8216f61-81bd-443c-9a4b-1610aa166599",
                             "name": "DELETE /api/categories/{category} — admin only",
                             "request": {
                                 "name": "DELETE /api/categories/{category} — admin only",
@@ -2302,7 +2701,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "category",
                                             "disabled": false,
                                             "description": {
@@ -2324,7 +2723,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "322ea12e-2221-49cd-aef3-387d03341278",
+                                    "id": "05bfbcea-9a62-41a0-8a88-07577153bbe1",
                                     "name": "200",
                                     "originalRequest": {
                                         "url": {
@@ -2344,7 +2743,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2371,7 +2770,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "a7b744aa-0a6b-4486-aeda-47b59361c02a",
+                                    "id": "4bf14422-9a85-4227-97e9-dc91620787ea",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -2391,7 +2790,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2418,7 +2817,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "3b307b8b-6f8c-4ed2-b920-71f1daa400f9",
+                                    "id": "387b1eb7-156a-4248-a490-b963b11416a5",
                                     "name": "Authorization error",
                                     "originalRequest": {
                                         "url": {
@@ -2438,7 +2837,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2465,7 +2864,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "e9df0ed6-2ad0-49b3-bb99-3029cbcd3ded",
+                                    "id": "34d94d2c-880e-460c-b22f-dd76788e1af4",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -2485,7 +2884,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "category"
                                                 }
                                             ]
@@ -2526,7 +2925,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "25c6b5af-78b6-47f6-91fd-3800d5226798",
+                    "id": "da2dedec-e0f1-49e1-a52c-d59ac3379ad8",
                     "name": "POST /api/checkout\nConvert active cart to a pending order and initialize Webpay transaction",
                     "request": {
                         "name": "POST /api/checkout\nConvert active cart to a pending order and initialize Webpay transaction",
@@ -2553,7 +2952,7 @@
                     },
                     "response": [
                         {
-                            "id": "c6dcd37a-0d21-4a57-825f-9465c98c5b60",
+                            "id": "6b0ff4cc-5f1a-4842-ab14-58b4e9df0986",
                             "name": "200",
                             "originalRequest": {
                                 "url": {
@@ -2588,7 +2987,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "20449f7d-f42f-4589-b25e-15eb2b571985",
+                            "id": "81965ee1-c55f-484e-ad28-c8141ae09506",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -2623,7 +3022,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "28275f8d-c4f0-4a15-915a-e73443c529b2",
+                            "id": "cc57d408-a7ab-4749-b33a-b271abb2503b",
                             "name": "422",
                             "originalRequest": {
                                 "url": {
@@ -2668,11 +3067,14 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "386c52bd-4031-40bd-ba18-dfc8b69114ee",
+                            "id": "00747842-4c87-4ade-9987-ec7b6ae4cacc",
                             "name": "GET|POST /api/checkout/commit\nHandle Transbank Webpay callback and update order status",
                             "request": {
                                 "name": "GET|POST /api/checkout/commit\nHandle Transbank Webpay callback and update order status",
-                                "description": {},
+                                "description": {
+                                    "content": "Transbank sends two types of callbacks:\n1. Normal flow: token_ws (GET/POST) — payment completed or failed at bank\n2. Cancellation: TBK_TOKEN + TBK_MAC (POST) — user cancelled before bank\n\nTBK_MAC must be verified before processing cancellation callbacks.",
+                                    "type": "text/plain"
+                                },
                                 "url": {
                                     "path": [
                                         "checkout",
@@ -2681,7 +3083,53 @@
                                     "host": [
                                         "{{baseUrl}}"
                                     ],
-                                    "query": [],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "token_ws",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "TBK_TOKEN",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "TBK_MAC",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "TBK_ORDEN_COMPRA",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "TBK_ID_SESSION",
+                                            "value": "<string>"
+                                        }
+                                    ],
                                     "variable": []
                                 },
                                 "header": [
@@ -2696,7 +3144,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "9cce3cc8-0bfe-492f-8e19-a6bb72bd16c6",
+                                    "id": "9d1b809d-220f-42ab-85b4-0bb3675dcd53",
                                     "name": "200",
                                     "originalRequest": {
                                         "url": {
@@ -2707,7 +3155,53 @@
                                             "host": [
                                                 "{{baseUrl}}"
                                             ],
-                                            "query": [],
+                                            "query": [
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "key": "token_ws",
+                                                    "value": "<string>"
+                                                },
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "key": "TBK_TOKEN",
+                                                    "value": "<string>"
+                                                },
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "key": "TBK_MAC",
+                                                    "value": "<string>"
+                                                },
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "key": "TBK_ORDEN_COMPRA",
+                                                    "value": "<string>"
+                                                },
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "key": "TBK_ID_SESSION",
+                                                    "value": "<string>"
+                                                }
+                                            ],
                                             "variable": []
                                         },
                                         "header": [
@@ -2746,7 +3240,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "48a467de-bd1b-4056-ab00-f7d51e980b94",
+                    "id": "0ce86a4b-7faa-4b52-b009-38e944d7b01a",
                     "name": "GET /api/designs — public",
                     "request": {
                         "name": "GET /api/designs — public",
@@ -2773,7 +3267,7 @@
                     },
                     "response": [
                         {
-                            "id": "84ca50b4-06b3-470b-8dff-bf197df55dc8",
+                            "id": "6df91c3d-d954-4896-8a3f-9a1725571d1e",
                             "name": "Paginated set of `DesignResource`",
                             "originalRequest": {
                                 "url": {
@@ -2803,7 +3297,7 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"data\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"file_url\": \"<string>\",\n      \"file_extension\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"product_id\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"file_url\": \"<string>\",\n      \"file_extension\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"product_id\": \"<string>\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"<string,null>\",\n    \"last\": \"<string,null>\",\n    \"prev\": \"<string,null>\",\n    \"next\": \"<string,null>\"\n  },\n  \"meta\": {\n    \"current_page\": \"<integer>\",\n    \"from\": \"<integer,null>\",\n    \"last_page\": \"<integer>\",\n    \"links\": [\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      },\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      }\n    ],\n    \"path\": \"<string,null>\",\n    \"per_page\": \"<integer>\",\n    \"to\": \"<integer,null>\",\n    \"total\": \"<integer>\"\n  }\n}",
+                            "body": "{\n  \"data\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"file_url\": \"<string,null>\",\n      \"file_extension\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"product_id\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"file_url\": \"<string,null>\",\n      \"file_extension\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"product_id\": \"<string>\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"<string,null>\",\n    \"last\": \"<string,null>\",\n    \"prev\": \"<string,null>\",\n    \"next\": \"<string,null>\"\n  },\n  \"meta\": {\n    \"current_page\": \"<integer>\",\n    \"from\": \"<integer,null>\",\n    \"last_page\": \"<integer>\",\n    \"links\": [\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      },\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      }\n    ],\n    \"path\": \"<string,null>\",\n    \"per_page\": \"<integer>\",\n    \"to\": \"<integer,null>\",\n    \"total\": \"<integer>\"\n  }\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         }
@@ -2814,7 +3308,7 @@
                     }
                 },
                 {
-                    "id": "44f91e16-b2e6-4dbe-ba37-9b3160cf2561",
+                    "id": "fdaa5352-6915-49b5-9fcc-ccc628b688ee",
                     "name": "POST /api/designs — authenticated + rate-limited (via route middleware).\nHandles image upload and storage",
                     "request": {
                         "name": "POST /api/designs — authenticated + rate-limited (via route middleware).\nHandles image upload and storage",
@@ -2875,7 +3369,7 @@
                     },
                     "response": [
                         {
-                            "id": "0877aa3f-565e-43a5-bdc7-a73bd99c4e75",
+                            "id": "7dd42b67-685c-4555-879f-1e73f8ff1f14",
                             "name": "`DesignResource`",
                             "originalRequest": {
                                 "url": {
@@ -2939,12 +3433,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"file_url\": \"<string>\",\n    \"file_extension\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"product_id\": \"<string>\"\n  }\n}",
+                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"file_url\": \"<string,null>\",\n    \"file_extension\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"product_id\": \"<string>\"\n  }\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "18b3e1c8-9f1e-422b-ad8e-f30ec03f1d10",
+                            "id": "2d41be4b-9023-412a-a99a-e63e0f87ccb3",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -3013,7 +3507,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "90a39146-7a77-47bc-a186-12181953510a",
+                            "id": "46d6dab9-dfd5-4ced-a71e-f05d75729c84",
                             "name": "Authorization error",
                             "originalRequest": {
                                 "url": {
@@ -3082,7 +3576,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c1f8883e-1d0b-4481-84b4-a89220be8c84",
+                            "id": "e37220b2-a7b9-4e2a-919a-b0ae28f9e9fb",
                             "name": "Validation error",
                             "originalRequest": {
                                 "url": {
@@ -3161,7 +3655,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "4dbb6d43-f2ac-426e-95cf-363159bfe310",
+                            "id": "82cd685b-ef09-4402-a749-97a154a86405",
                             "name": "GET /api/designs/{design} — public",
                             "request": {
                                 "name": "GET /api/designs/{design} — public",
@@ -3178,7 +3672,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "design",
                                             "disabled": false,
                                             "description": {
@@ -3200,7 +3694,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "45635502-a3cb-4c62-8843-1110d675ed8e",
+                                    "id": "8724276f-cd4f-420c-81ff-c4d5386c0765",
                                     "name": "`DesignResource`",
                                     "originalRequest": {
                                         "url": {
@@ -3220,7 +3714,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3242,12 +3736,12 @@
                                             "value": "application/json"
                                         }
                                     ],
-                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"file_url\": \"<string>\",\n    \"file_extension\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"product_id\": \"<string>\"\n  }\n}",
+                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"file_url\": \"<string,null>\",\n    \"file_extension\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"product_id\": \"<string>\"\n  }\n}",
                                     "cookie": [],
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "f171968a-5783-4516-ba24-0164ae88d814",
+                                    "id": "706baba0-8224-47d0-a633-f21fb2ced7d6",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -3267,7 +3761,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3300,7 +3794,7 @@
                             }
                         },
                         {
-                            "id": "6a1e17db-cea6-475a-977a-442888714704",
+                            "id": "e83cd502-62e3-4ac7-b92f-48ff74351359",
                             "name": "DELETE /api/designs/{design} — admin only",
                             "request": {
                                 "name": "DELETE /api/designs/{design} — admin only",
@@ -3317,7 +3811,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "design",
                                             "disabled": false,
                                             "description": {
@@ -3339,7 +3833,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "a059bb85-bb7b-418a-b431-d170912c4b41",
+                                    "id": "2aef5ce6-a2f8-4190-9ca9-c3b124d4f6e8",
                                     "name": "200",
                                     "originalRequest": {
                                         "url": {
@@ -3359,7 +3853,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3386,7 +3880,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "9d03cd56-a6dd-4d7a-af97-b42afa893982",
+                                    "id": "88b86ff7-ff7c-47b8-b880-789ab964f317",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -3406,7 +3900,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3433,7 +3927,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "85dd276f-c514-433a-85e9-532a3be9ad24",
+                                    "id": "dd1dff69-145e-40b1-b6f0-96288e6fa175",
                                     "name": "Authorization error",
                                     "originalRequest": {
                                         "url": {
@@ -3453,7 +3947,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3480,7 +3974,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "e40bb153-ebc6-4117-9dde-a59ba831d08e",
+                                    "id": "1612004b-c010-473c-8d2d-f8e729c2fcd2",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -3500,7 +3994,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "design"
                                                 }
                                             ]
@@ -3541,7 +4035,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "8b391210-c1b3-43e7-a7cd-09d505e55758",
+                    "id": "84064dce-c247-4371-aead-1489797d3e8a",
                     "name": "GET /api/products — public",
                     "request": {
                         "name": "GET /api/products — public",
@@ -3568,7 +4062,7 @@
                     },
                     "response": [
                         {
-                            "id": "a3c8bce5-bebd-4588-8f83-f7989292efd1",
+                            "id": "9dc25513-6d32-45e8-8957-06c94360f9f4",
                             "name": "Paginated set of `ProductResource`",
                             "originalRequest": {
                                 "url": {
@@ -3598,7 +4092,7 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"data\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"description\": \"<string>\",\n      \"price\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"category\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"slug\": \"<string>\",\n        \"is_active\": \"<string>\",\n        \"created_at\": \"<string>\"\n      }\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"description\": \"<string>\",\n      \"price\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"category\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"slug\": \"<string>\",\n        \"is_active\": \"<string>\",\n        \"created_at\": \"<string>\"\n      }\n    }\n  ],\n  \"links\": {\n    \"first\": \"<string,null>\",\n    \"last\": \"<string,null>\",\n    \"prev\": \"<string,null>\",\n    \"next\": \"<string,null>\"\n  },\n  \"meta\": {\n    \"current_page\": \"<integer>\",\n    \"from\": \"<integer,null>\",\n    \"last_page\": \"<integer>\",\n    \"links\": [\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      },\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      }\n    ],\n    \"path\": \"<string,null>\",\n    \"per_page\": \"<integer>\",\n    \"to\": \"<integer,null>\",\n    \"total\": \"<integer>\"\n  }\n}",
+                            "body": "{\n  \"data\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"description\": \"<string,null>\",\n      \"price\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"category\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"slug\": \"<string>\",\n        \"is_active\": \"<string>\",\n        \"created_at\": \"<string>\"\n      }\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"description\": \"<string,null>\",\n      \"price\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\",\n      \"category\": {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"slug\": \"<string>\",\n        \"is_active\": \"<string>\",\n        \"created_at\": \"<string>\"\n      }\n    }\n  ],\n  \"links\": {\n    \"first\": \"<string,null>\",\n    \"last\": \"<string,null>\",\n    \"prev\": \"<string,null>\",\n    \"next\": \"<string,null>\"\n  },\n  \"meta\": {\n    \"current_page\": \"<integer>\",\n    \"from\": \"<integer,null>\",\n    \"last_page\": \"<integer>\",\n    \"links\": [\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      },\n      {\n        \"url\": \"<string,null>\",\n        \"label\": \"<string>\",\n        \"active\": \"<boolean>\"\n      }\n    ],\n    \"path\": \"<string,null>\",\n    \"per_page\": \"<integer>\",\n    \"to\": \"<integer,null>\",\n    \"total\": \"<integer>\"\n  }\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         }
@@ -3609,7 +4103,7 @@
                     }
                 },
                 {
-                    "id": "c271d82d-b8cf-4ce1-8068-28bb0e2363c7",
+                    "id": "0f4c485d-af99-4acf-9274-e89782d9a95f",
                     "name": "POST /api/products — admin only",
                     "request": {
                         "name": "POST /api/products — admin only",
@@ -3649,7 +4143,7 @@
                     },
                     "response": [
                         {
-                            "id": "c935769d-ed23-4442-ae75-a06f0d5bd801",
+                            "id": "01520abe-4410-445b-b76c-3183d452b680",
                             "name": "`ProductResource`",
                             "originalRequest": {
                                 "url": {
@@ -3692,12 +4186,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
+                            "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string,null>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "5b518fef-2aff-45b8-b403-83cd2137ee9c",
+                            "id": "c0e4962d-9a6e-4f7f-b8cb-370457b8cc53",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -3745,7 +4239,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "25cd773f-bd66-4afc-98de-141b63fcba67",
+                            "id": "61919814-b186-422b-b6c5-9c26c833d028",
                             "name": "Authorization error",
                             "originalRequest": {
                                 "url": {
@@ -3793,7 +4287,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "02280540-f1da-42da-ae41-26748b1c14e3",
+                            "id": "c0af765d-47da-415f-afa5-7af713a03e03",
                             "name": "Validation error",
                             "originalRequest": {
                                 "url": {
@@ -3851,7 +4345,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "f28ed82d-4dcc-4072-9e4f-bd635ff60bdc",
+                            "id": "c1e5dc28-ed6e-4756-9fd0-74fe13597e6e",
                             "name": "GET /api/products/{product} — public",
                             "request": {
                                 "name": "GET /api/products/{product} — public",
@@ -3868,7 +4362,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "product",
                                             "disabled": false,
                                             "description": {
@@ -3890,7 +4384,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "f402ec32-9d3c-45ba-aaa6-5cfa43df9dc0",
+                                    "id": "6acb1939-c799-4731-b89c-c05abaa87401",
                                     "name": "`ProductResource`",
                                     "originalRequest": {
                                         "url": {
@@ -3910,7 +4404,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -3932,12 +4426,12 @@
                                             "value": "application/json"
                                         }
                                     ],
-                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
+                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string,null>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
                                     "cookie": [],
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "a0df2b33-2996-432f-a08a-d0ef9e09d37d",
+                                    "id": "6d727ccf-4880-4508-9050-097a5daf9652",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -3957,7 +4451,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -3990,7 +4484,7 @@
                             }
                         },
                         {
-                            "id": "e1b4bfb6-c89f-4253-bc7a-65ff5da21eaf",
+                            "id": "f271cdd0-edd6-4580-ab50-fae155f1fb25",
                             "name": "PUT /api/products/{product} — admin only",
                             "request": {
                                 "name": "PUT /api/products/{product} — admin only",
@@ -4007,7 +4501,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "product",
                                             "disabled": false,
                                             "description": {
@@ -4042,7 +4536,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "fdc97337-75ef-49ba-b084-109de8a2551a",
+                                    "id": "c332fd86-2ecd-4303-8a44-4dbd4abcbb5c",
                                     "name": "`ProductResource`",
                                     "originalRequest": {
                                         "url": {
@@ -4062,7 +4556,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4097,12 +4591,12 @@
                                             "value": "application/json"
                                         }
                                     ],
-                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
+                                    "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"description\": \"<string,null>\",\n    \"price\": \"<string>\",\n    \"is_active\": \"<string>\",\n    \"created_at\": \"<string>\",\n    \"category\": {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"is_active\": \"<string>\",\n      \"created_at\": \"<string>\"\n    }\n  }\n}",
                                     "cookie": [],
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "b09a3bea-8edd-40bb-b3f2-7fbf121a44aa",
+                                    "id": "8753d428-cff7-4cb1-8794-1ee24bc875fc",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -4122,7 +4616,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4162,7 +4656,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "427e43e1-0661-4280-b5bd-6acdd04a9ac7",
+                                    "id": "f9db6033-9c64-4bfd-91ab-abdb13649230",
                                     "name": "Authorization error",
                                     "originalRequest": {
                                         "url": {
@@ -4182,7 +4676,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4222,7 +4716,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "5957ba01-dfd1-45b5-9b70-5d081b6891f4",
+                                    "id": "a5dc4bda-111d-447f-b753-6c2420550f7d",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -4242,7 +4736,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4282,7 +4776,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "c9e3ce8b-f177-4bf4-a59a-b9f80fcb1f69",
+                                    "id": "da5cad71-2961-4ef0-870f-7a5f8faae5bf",
                                     "name": "Validation error",
                                     "originalRequest": {
                                         "url": {
@@ -4302,7 +4796,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4348,7 +4842,7 @@
                             }
                         },
                         {
-                            "id": "e9c221d3-55ed-4ecd-8233-c2d78c87e2c7",
+                            "id": "4433d616-9363-4d5b-ae8a-66b81ad89f0f",
                             "name": "DELETE /api/products/{product} — admin only",
                             "request": {
                                 "name": "DELETE /api/products/{product} — admin only",
@@ -4365,7 +4859,7 @@
                                     "variable": [
                                         {
                                             "type": "any",
-                                            "value": "<integer>",
+                                            "value": "<string>",
                                             "key": "product",
                                             "disabled": false,
                                             "description": {
@@ -4387,7 +4881,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "b9db9c1b-b788-48ea-8a67-f7506b9822a4",
+                                    "id": "7f254de1-b83b-48f5-8e30-c2ce48958b8f",
                                     "name": "200",
                                     "originalRequest": {
                                         "url": {
@@ -4407,7 +4901,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4434,7 +4928,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "9a1bb0c7-e60e-41bc-9024-757f7abc44fd",
+                                    "id": "25978296-ce86-4c4f-aa3a-d43d890b03f4",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -4454,7 +4948,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4481,7 +4975,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "fa3051d8-50d2-4efb-9e2a-51a275434562",
+                                    "id": "357965bc-1287-4a1d-b08f-a7ae9d5e9873",
                                     "name": "Authorization error",
                                     "originalRequest": {
                                         "url": {
@@ -4501,7 +4995,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4528,7 +5022,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "189d7fdc-c54c-420c-a1e5-73f6203ba8b4",
+                                    "id": "d267ba0e-64db-47a4-882d-164c2f7e6f01",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -4548,7 +5042,7 @@
                                                         "type": "text/plain"
                                                     },
                                                     "type": "any",
-                                                    "value": "<integer>",
+                                                    "value": "<string>",
                                                     "key": "product"
                                                 }
                                             ]
@@ -4589,7 +5083,7 @@
             "description": "",
             "item": [
                 {
-                    "id": "0be8f70e-e122-406d-a4cf-9e2aa58c6383",
+                    "id": "fc60fe36-30e5-406c-8451-c83bb1684c7c",
                     "name": "GET /api/users\nLista todos los usuarios. Requiere rol admin OR permiso users.view",
                     "request": {
                         "name": "GET /api/users\nLista todos los usuarios. Requiere rol admin OR permiso users.view",
@@ -4616,7 +5110,7 @@
                     },
                     "response": [
                         {
-                            "id": "f9e7504f-7729-421e-b4e2-7c11b5648004",
+                            "id": "f9c30106-11ad-4725-ae85-c1f50ed5c160",
                             "name": "Array of items",
                             "originalRequest": {
                                 "url": {
@@ -4651,7 +5145,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6ee8882c-c5dd-43dd-9656-bbdced982a9e",
+                            "id": "60d525c0-4f07-4b22-a2b3-721a0d37504d",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -4684,6 +5178,41 @@
                             "body": "{\n  \"message\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "cf32a01d-e45c-4bdc-a751-4967dc318ac0",
+                            "name": "Authorization error",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "users"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"message\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
                         }
                     ],
                     "event": [],
@@ -4692,7 +5221,7 @@
                     }
                 },
                 {
-                    "id": "354fe8b3-e4be-4a4f-87ff-a8bf982ef264",
+                    "id": "6399de73-f518-4ee5-b7e8-83933f13d3d5",
                     "name": "POST /api/users\nCrea un nuevo usuario. Requiere rol admin OR permiso users.create",
                     "request": {
                         "name": "POST /api/users\nCrea un nuevo usuario. Requiere rol admin OR permiso users.create",
@@ -4732,7 +5261,7 @@
                     },
                     "response": [
                         {
-                            "id": "cb10d968-be48-40e7-b777-a6b8819f4f92",
+                            "id": "4952fb1c-da09-44b8-8846-bce604404545",
                             "name": "`UserResource`",
                             "originalRequest": {
                                 "url": {
@@ -4780,7 +5309,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6d2042e5-afc3-4e7e-997f-e2f0b9d95dc2",
+                            "id": "ade52870-0b15-4687-a900-9d34e6b50a33",
                             "name": "Unauthenticated",
                             "originalRequest": {
                                 "url": {
@@ -4828,7 +5357,55 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "f24102de-e195-41ce-ace4-2d31ffe731f1",
+                            "id": "db9feadb-bdbf-4c42-984b-38392263a19b",
+                            "name": "Authorization error",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "users"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\",\n  \"roles\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"message\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "9e45905b-50f7-460d-873b-2ba07dd7ddd2",
                             "name": "Validation error",
                             "originalRequest": {
                                 "url": {
@@ -4886,7 +5463,7 @@
                     "description": "",
                     "item": [
                         {
-                            "id": "0f716a21-7fc8-44ca-a00a-a5207bef7b4c",
+                            "id": "370e86d1-fa2a-4428-91fc-231b6858dd4a",
                             "name": "GET /api/users/{user}\nMuestra un usuario. Requiere rol admin OR permiso users.view",
                             "request": {
                                 "name": "GET /api/users/{user}\nMuestra un usuario. Requiere rol admin OR permiso users.view",
@@ -4925,7 +5502,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "677f78ac-feb7-4d0b-bcc8-5a29b4c67895",
+                                    "id": "20e64717-1144-45c3-91a0-adcafc191629",
                                     "name": "`UserResource`",
                                     "originalRequest": {
                                         "url": {
@@ -4972,7 +5549,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "483bd89d-9f89-49ac-9760-6fbbcfc09018",
+                                    "id": "ccb8058a-0556-4858-af7e-8293b6986968",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -5019,7 +5596,54 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "2be8bddb-e6cb-454c-bc35-8af74888412f",
+                                    "id": "3f2d06fe-6b53-4ff9-b13d-3a8efd807dcc",
+                                    "name": "Authorization error",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "users",
+                                                ":user"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": [
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "(Required) The user UUID",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "type": "any",
+                                                    "value": "<string>",
+                                                    "key": "user"
+                                                }
+                                            ]
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "GET",
+                                        "body": {}
+                                    },
+                                    "status": "Forbidden",
+                                    "code": 403,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "068824f3-2813-49d2-9a56-63f06bcb33a3",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -5072,7 +5696,7 @@
                             }
                         },
                         {
-                            "id": "faa4f845-0dca-428a-8a05-2c4905656746",
+                            "id": "cf598e52-8497-493a-b4c3-66f88f84ee24",
                             "name": "PUT /api/users/{user}\nActualiza un usuario. Requiere rol admin OR permiso users.update",
                             "request": {
                                 "name": "PUT /api/users/{user}\nActualiza un usuario. Requiere rol admin OR permiso users.update",
@@ -5124,7 +5748,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "67b005a3-ccaf-4c46-a14b-ea7f34663265",
+                                    "id": "072d099f-fa07-4dea-96c6-642a6c686ce3",
                                     "name": "`UserResource`",
                                     "originalRequest": {
                                         "url": {
@@ -5184,7 +5808,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "b6c63bab-13f0-4c26-bbf4-fc71de3057a6",
+                                    "id": "6b387b74-88a8-4cb7-82fd-179991496ee1",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -5244,7 +5868,67 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "73c5049d-9549-43ae-8408-d8730a8bd2f8",
+                                    "id": "7c179cc3-076c-4874-bb0c-076a5960f301",
+                                    "name": "Authorization error",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "users",
+                                                ":user"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": [
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "(Required) The user UUID",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "type": "any",
+                                                    "value": "<string>",
+                                                    "key": "user"
+                                                }
+                                            ]
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "PUT",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"name\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<string>\",\n  \"password_confirmation\": \"<string>\",\n  \"roles\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "headerFamily": "json",
+                                                    "language": "json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "status": "Forbidden",
+                                    "code": 403,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "1a351233-7317-4596-bcba-b241ec674a03",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -5304,7 +5988,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "cf14dba2-658d-413c-9985-7a13ba63ac5a",
+                                    "id": "ea9b0a9e-61d6-49ed-a663-98c61af7466e",
                                     "name": "Validation error",
                                     "originalRequest": {
                                         "url": {
@@ -5370,7 +6054,7 @@
                             }
                         },
                         {
-                            "id": "359b36f4-a3a4-45f4-8936-fb010452ff3e",
+                            "id": "bb7cc589-5ec6-41c7-9c31-a1366e41d5f1",
                             "name": "DELETE /api/users/{user}\nElimina un usuario. Requiere rol admin OR permiso users.delete",
                             "request": {
                                 "name": "DELETE /api/users/{user}\nElimina un usuario. Requiere rol admin OR permiso users.delete",
@@ -5409,7 +6093,7 @@
                             },
                             "response": [
                                 {
-                                    "id": "9fcce902-10fe-4dd4-bb55-8ac352ca9f76",
+                                    "id": "a6820200-041d-4ece-85f7-c0c0c39cf20a",
                                     "name": "200",
                                     "originalRequest": {
                                         "url": {
@@ -5456,7 +6140,7 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "7aa00860-0aea-4ad8-b8c4-b7d992476718",
+                                    "id": "9b3c0d9f-4625-43e3-a5e4-dd4ebb921b57",
                                     "name": "Unauthenticated",
                                     "originalRequest": {
                                         "url": {
@@ -5503,7 +6187,54 @@
                                     "_postman_previewlanguage": "json"
                                 },
                                 {
-                                    "id": "b25cd3cb-93c3-4a6f-89e7-4b398f03e1f0",
+                                    "id": "f96cee58-bc16-4427-a7b3-b541c2fd5c38",
+                                    "name": "Authorization error",
+                                    "originalRequest": {
+                                        "url": {
+                                            "path": [
+                                                "users",
+                                                ":user"
+                                            ],
+                                            "host": [
+                                                "{{baseUrl}}"
+                                            ],
+                                            "query": [],
+                                            "variable": [
+                                                {
+                                                    "disabled": false,
+                                                    "description": {
+                                                        "content": "(Required) The user UUID",
+                                                        "type": "text/plain"
+                                                    },
+                                                    "type": "any",
+                                                    "value": "<string>",
+                                                    "key": "user"
+                                                }
+                                            ]
+                                        },
+                                        "header": [
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "method": "DELETE",
+                                        "body": {}
+                                    },
+                                    "status": "Forbidden",
+                                    "code": 403,
+                                    "header": [
+                                        {
+                                            "key": "Content-Type",
+                                            "value": "application/json"
+                                        }
+                                    ],
+                                    "body": "{\n  \"message\": \"<string>\"\n}",
+                                    "cookie": [],
+                                    "_postman_previewlanguage": "json"
+                                },
+                                {
+                                    "id": "6796fe66-efd2-490c-bfad-91c692a5ef0c",
                                     "name": "Not found",
                                     "originalRequest": {
                                         "url": {
@@ -5568,7 +6299,7 @@
         }
     ],
     "info": {
-        "_postman_id": "8919a1ef-1bdb-4cb9-acc8-fd21509f14a8",
+        "_postman_id": "d1879294-342f-49c6-adde-6e6482e43aac",
         "name": "Laravel",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": {

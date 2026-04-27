@@ -83,7 +83,7 @@
         "/logout": {
             "post": {
                 "operationId": "auth.logout",
-                "description": "Revoca el token actual del usuario autenticado.\nRequiere middleware auth:sanctum en la ruta.",
+                "description": "Revoca el token actual del usuario autenticado.\nRequiere middleware auth:sanctum en la ruta.\nValidaci\u00f3n defensiva: verifica que exista un token activo antes de eliminarlo.",
                 "summary": "POST /api/logout",
                 "tags": [
                     "Auth"
@@ -107,6 +107,128 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "No hay un token activo para revocar."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/refresh": {
+            "post": {
+                "operationId": "auth.refresh",
+                "description": "Revoca el token actual y emite uno nuevo.\nRequiere middleware auth:sanctum en la ruta.",
+                "summary": "POST /api/refresh",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "const": "Bearer"
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "token_type"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/user/password": {
+            "post": {
+                "operationId": "auth.updatePassword",
+                "description": "Actualiza la contrase\u00f1a del usuario autenticado.\nRequiere la contrase\u00f1a actual para confirmar identidad antes de cambiarla.\nRequiere middleware auth:sanctum en la ruta.",
+                "summary": "POST /api/user/password",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "current_password",
+                                    "password",
+                                    "password_confirmation"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Password updated successfully."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -198,6 +320,25 @@
                             }
                         }
                     },
+                    "403": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Design not available."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
                     "400": {
                         "description": "",
                         "content": {
@@ -237,7 +378,7 @@
                         "required": true,
                         "description": "The cart item UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -329,7 +470,7 @@
                         "required": true,
                         "description": "The cart item UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -683,7 +824,7 @@
                         "required": true,
                         "description": "The category UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -724,7 +865,7 @@
                         "required": true,
                         "description": "The category UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -790,7 +931,7 @@
                         "required": true,
                         "description": "The category UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -825,6 +966,25 @@
                     "Checkout"
                 ],
                 "responses": {
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "El pago no pudo procesarse. Por favor, int\u00e9ntalo de nuevo."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
                     "200": {
                         "description": "",
                         "content": {
@@ -847,25 +1007,6 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "No active cart with items found."
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -875,9 +1016,47 @@
         "/checkout/commit": {
             "get": {
                 "operationId": "checkout.commit",
+                "description": "Transbank sends two types of callbacks:\n1. Normal flow: token_ws (GET/POST) \u2014 payment completed or failed at bank\n2. Cancellation: TBK_TOKEN + TBK_MAC (POST) \u2014 user cancelled before bank\n\nTBK_MAC must be verified before processing cancellation callbacks.",
                 "summary": "GET|POST /api/checkout/commit\nHandle Transbank Webpay callback and update order status",
                 "tags": [
                     "Checkout"
+                ],
+                "parameters": [
+                    {
+                        "name": "token_ws",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "TBK_TOKEN",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "TBK_MAC",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "TBK_ORDEN_COMPRA",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "TBK_ID_SESSION",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -1110,7 +1289,7 @@
                         "required": true,
                         "description": "The design UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1151,7 +1330,7 @@
                         "required": true,
                         "description": "The design UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1395,7 +1574,7 @@
                         "required": true,
                         "description": "The product UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1436,7 +1615,7 @@
                         "required": true,
                         "description": "The product UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1502,7 +1681,7 @@
                         "required": true,
                         "description": "The product UUID",
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -1565,6 +1744,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -1611,6 +1793,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -1664,6 +1849,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -1725,6 +1913,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
                     },
@@ -1763,6 +1954,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -1824,7 +2018,7 @@
                         ]
                     },
                     "quantity": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "unit_price": {
                         "type": "string"
@@ -1908,7 +2102,10 @@
                         "type": "string"
                     },
                     "file_url": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "file_extension": {
                         "type": "string"
@@ -1946,7 +2143,10 @@
                         "type": "string"
                     },
                     "description": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "price": {
                         "type": "string"
@@ -1982,10 +2182,13 @@
                         "type": "string"
                     },
                     "price": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "stock": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "is_active": {
                         "type": "string"
@@ -2342,8 +2545,8 @@
                     }
                 }
             },
-            "ModelNotFoundException": {
-                "description": "Not found",
+            "AuthorizationException": {
+                "description": "Authorization error",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -2361,8 +2564,8 @@
                     }
                 }
             },
-            "AuthorizationException": {
-                "description": "Authorization error",
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {
