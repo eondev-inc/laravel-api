@@ -8,19 +8,20 @@ API REST para un SaaS de venta de camisetas personalizadas. Construida con Larav
 
 1. [Arquitectura general](#arquitectura-general)
 2. [Infraestructura Docker](#infraestructura-docker)
-3. [Chain of Responsibility — Autorización (RBAC)](#chain-of-responsibility--autorización-rbac)
-4. [Chain of Responsibility — Autenticación](#chain-of-responsibility--autenticación)
-5. [RBAC — Roles y Permisos](#rbac--roles-y-permisos)
-6. [Endpoints de la API](#endpoints-de-la-api)
-7. [Catálogo](#catálogo)
-8. [Carrito de compras](#carrito-de-compras)
-9. [Checkout y Pagos (Transbank)](#checkout-y-pagos-transbank)
-10. [Seguridad](#seguridad)
-11. [Documentación interactiva (Swagger)](#documentación-interactiva-swagger)
-12. [Datos de prueba (Seeders)](#datos-de-prueba-seeders)
-13. [Testing](#testing)
-14. [Configuración y Variables de Entorno](#configuración-y-variables-de-entorno)
-15. [Decisiones de diseño y gotchas](#decisiones-de-diseño-y-gotchas)
+3. [Almacenamiento de Archivos (S3 / MinIO)](#almacenamiento-de-archivos-s3--minio)
+4. [Chain of Responsibility — Autorización (RBAC)](#chain-of-responsibility--autorización-rbac)
+5. [Chain of Responsibility — Autenticación](#chain-of-responsibility--autenticación)
+6. [RBAC — Roles y Permisos](#rbac--roles-y-permisos)
+7. [Endpoints de la API](#endpoints-de-la-api)
+8. [Catálogo](#catálogo)
+9. [Carrito de compras](#carrito-de-compras)
+10. [Checkout y Pagos (Transbank)](#checkout-y-pagos-transbank)
+11. [Seguridad](#seguridad)
+12. [Documentación interactiva (Swagger)](#documentación-interactiva-swagger)
+13. [Datos de prueba (Seeders)](#datos-de-prueba-seeders)
+14. [Testing](#testing)
+15. [Configuración y Variables de Entorno](#configuración-y-variables-de-entorno)
+16. [Decisiones de diseño y gotchas](#decisiones-de-diseño-y-gotchas)
 
 ---
 
@@ -134,6 +135,7 @@ El stack de desarrollo usa **Traefik v3** como proxy reverso. Todos los servicio
 | `traefik` | `traefik:v3` | `http://localhost:8081` (dashboard) | 80 |
 | `app` | `php:8.4-cli-alpine` (custom) | `http://api.laravel.localhost` | 8000 |
 | `adminer` | `adminer:latest` | `http://adminer.laravel.localhost` | 8080 |
+| `minio` | `minio/minio:latest` | `http://minio.laravel.localhost` (API S3) / `http://minio-console.laravel.localhost` (consola web) | 9000 / 9001 |
 | `postgres` | `postgres:16-alpine` | — (solo interno) | 5432 |
 | `redis` | `redis:7-alpine` | — (solo interno) | 6379 |
 
@@ -176,6 +178,70 @@ El `composer install` se ejecuta antes de copiar el código fuente para aprovech
 ### Base de datos de tests
 
 **`docker/postgres/init.sql`** — se ejecuta automáticamente al inicializar el contenedor y crea la base de datos `laravel_api_test`. Requiere el flag `:z` en el volume (necesario en Fedora con SELinux).
+
+---
+
+## Almacenamiento de Archivos (S3 / MinIO)
+
+### Discos configurados
+
+La aplicación usa dos discos lógicos S3, ambos definidos en `config/filesystems.php`:
+
+| Disco | Variable de bucket | Visibilidad | Uso |
+|---|---|---|---|
+| `s3_public` | `AWS_PUBLIC_BUCKET` | `public` | Imágenes de catálogo (productos, categorías) |
+| `s3_private` | `AWS_PRIVATE_BUCKET` | `private` | Diseños subidos por usuarios |
+
+### MinIO en desarrollo local
+
+En desarrollo, **MinIO** actúa como reemplazo local de Amazon S3. Es compatible con la API S3 completa, por lo que el código de la aplicación no cambia entre entornos.
+
+| Entorno | Endpoint S3 | Consola web |
+|---|---|---|
+| Local (Docker) | `http://minio:9000` (interno) | `http://minio-console.laravel.localhost` |
+| Producción | AWS S3 (dejar `AWS_ENDPOINT` vacío) | — |
+
+Credenciales por defecto en desarrollo:
+
+```dotenv
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_USE_PATH_STYLE_ENDPOINT=true   # obligatorio con MinIO
+```
+
+> En producción, `AWS_USE_PATH_STYLE_ENDPOINT` debe ser `false` (comportamiento por defecto de AWS S3).
+
+### Presigned URLs para diseños privados
+
+Los diseños se almacenan en el disco `s3_private` (visibilidad `private`). Las URLs de acceso **no son permanentes** — se generan dinámicamente como **Presigned URLs** con TTL de 15 minutos en `DesignResource`:
+
+```php
+'file_url' => $this->file_path
+    ? Storage::disk('s3_private')->temporaryUrl($this->file_path, now()->addMinutes(15))
+    : null,
+```
+
+Esto significa que:
+- El campo `file_url` en la respuesta JSON es válido por **15 minutos** desde que se generó.
+- El cliente debe re-solicitar el recurso para obtener una URL fresca si la anterior expiró.
+- La columna `file_url` fue **eliminada** de la tabla `designs` — la URL nunca se persiste en base de datos.
+
+### Flujo de upload de diseños
+
+```
+POST /api/designs (multipart/form-data)
+   │
+   ▼
+DesignController::store()
+   ├── Valida imagen (jpg, png, svg, webp — máx 5MB)
+   ├── Storage::disk('s3_private')->put('designs/', $file)  → retorna file_path
+   ├── Design::create(['file_path' => $path, ...])
+   └── Retorna DesignResource con Presigned URL (15 min)
+
+DELETE /api/designs/{uuid}
+   ├── Storage::disk('s3_private')->delete($design->file_path)
+   └── $design->delete()
+```
 
 ---
 
@@ -538,7 +604,7 @@ Todas las rutas requieren `Authorization: Bearer {token}`. El acceso se concede 
 ```
 categories ──< products ──< product_variations
                     │
-                    └──< designs (con file_path + file_url)
+                    └──< designs (con file_path — URL generada dinámicamente como Presigned URL)
 ```
 
 Todos los modelos exponen un `uuid` público. Los IDs internos nunca se exponen en la API.
@@ -579,6 +645,8 @@ Todos los modelos exponen un `uuid` público. Los IDs internos nunca se exponen 
 ### Endpoints de diseños
 
 Los diseños son imágenes subidas por usuarios autenticados y asociadas a un producto. El upload está limitado a 10 req/min (`throttle:uploads`) y requiere el permiso `designs.create`.
+
+El campo `file_url` en la respuesta es una **Presigned URL** válida por 15 minutos. No se persiste en base de datos — se genera dinámicamente en cada request.
 
 | Método | Ruta | Auth | Descripción |
 |---|---|---|---|
@@ -904,6 +972,16 @@ LOGIN_LOCKOUT_MINUTES=15
 # Sanctum — expiración de tokens (en minutos)
 SANCTUM_TOKEN_EXPIRATION=1440   # 24h por defecto. null = sin expiración (no recomendado en producción)
 
+# Almacenamiento S3 / MinIO
+# En desarrollo: apuntar a MinIO local. En producción: dejar AWS_ENDPOINT vacío y usar credenciales reales de AWS.
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_DEFAULT_REGION=us-east-1
+AWS_PUBLIC_BUCKET=laravel-public
+AWS_PRIVATE_BUCKET=laravel-private
+AWS_ENDPOINT=http://minio:9000       # Solo en desarrollo con MinIO. Vacío en producción.
+AWS_USE_PATH_STYLE_ENDPOINT=true     # true con MinIO. false en producción con AWS S3.
+
 # Transbank (solo producción)
 TRANSBANK_API_KEY=
 TRANSBANK_COMMERCE_CODE=
@@ -993,3 +1071,17 @@ sudo dnf install -y php-pgsql
 ```
 
 Verificar instalación: `php -m | grep pdo_pgsql`
+
+### `Storage::fake('s3_private')` en tests de Feature con diseños
+
+Cualquier test de Feature que retorne respuestas con modelos `Design` debe declarar `Storage::fake('s3_private')` al inicio. Sin esto, `DesignResource` intenta generar una Presigned URL contra el adapter S3 real y el test falla con un error de conexión.
+
+```php
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    Storage::fake('s3_private');
+});
+```
+
+Esto aplica a todos los tests que llamen endpoints que devuelvan `DesignResource` en la respuesta, incluyendo tests de carrito si los items incluyen diseños.
