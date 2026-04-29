@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductVariationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,12 +32,17 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/products/{product}/variations', [ProductVariationController::class, 'index']);
+Route::get('/products/{product}/variations/{variation}', [ProductVariationController::class, 'show']);
 Route::get('/designs', [DesignController::class, 'index']);
 Route::get('/designs/{design}', [DesignController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
     Route::apiResource('products', ProductController::class)->except(['index', 'show']);
+    Route::post('/products/{product}/variations', [ProductVariationController::class, 'store']);
+    Route::put('/products/{product}/variations/{variation}', [ProductVariationController::class, 'update']);
+    Route::delete('/products/{product}/variations/{variation}', [ProductVariationController::class, 'destroy']);
     Route::middleware('throttle:uploads')->group(function () {
         Route::post('/designs', [DesignController::class, 'store']);
     });

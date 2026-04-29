@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'is_active' => $this->is_active,
             'category' => $this->whenLoaded('category', fn () => new CategoryResource($this->category)),
+            'variations' => $this->whenLoaded('variations', fn () => ProductVariationResource::collection($this->variations)),
             'created_at' => $this->created_at?->toISOString(),
         ];
     }
