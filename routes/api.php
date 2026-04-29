@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariationController;
 use App\Http\Controllers\UserController;
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 // Autenticación — rutas públicas (sin auth:sanctum)
 Route::post('/login', [AuthController::class, 'login']);
+
+// Password reset — public (no auth required)
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // Autenticación — requiere token válido
 Route::middleware('auth:sanctum')->group(function () {

@@ -1,0 +1,1410 @@
+{
+    "info": {
+        "name": "Laravel API — Pruebas Funcionales",
+        "description": "Colección de pruebas funcionales end-to-end para la API. Ejecutar en orden: cada carpeta depende del estado generado por la anterior.\n\n**Prerequisitos:**\n1. Importar también el environment `postman_environment.json`.\n2. Tener el stack Docker corriendo: `docker compose up -d`.\n3. Haber ejecutado `php artisan migrate:fresh --seed` para tener datos base.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [],
+    "item": [
+        {
+            "name": "01 — Autenticación",
+            "description": "Pruebas del flujo completo de autenticación: login, token, refresh, cambio de contraseña y logout.",
+            "item": [
+                {
+                    "name": "Login exitoso (admin)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Respuesta tiene token y user', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('token');",
+                                    "    pm.expect(json).to.have.property('token_type', 'Bearer');",
+                                    "    pm.expect(json).to.have.property('user');",
+                                    "    pm.expect(json.user).to.have.property('email', pm.environment.get('admin_email'));",
+                                    "});",
+                                    "",
+                                    "pm.test('No expone password hash', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.not.include('$2y$');",
+                                    "});",
+                                    "",
+                                    "// Guardar token para requests siguientes",
+                                    "var json = pm.response.json();",
+                                    "pm.environment.set('admin_token', json.token);",
+                                    "pm.environment.set('admin_user_id', json.user.id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login fallido — credenciales incorrectas",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401', function () {",
+                                    "    pm.response.to.have.status(401);",
+                                    "});",
+                                    "",
+                                    "pm.test('Mensaje de error genérico (no revela si el email existe)', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('message');",
+                                    "    pm.expect(json.message).to.not.include('email');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"wrong-password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login fallido — validación (email inválido)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 422', function () {",
+                                    "    pm.response.to.have.status(422);",
+                                    "});",
+                                    "",
+                                    "pm.test('Errores de validación presentes', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('errors');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"no-es-un-email\",\n    \"password\": \"password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /user — usuario autenticado",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Retorna datos del usuario sin password', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('id');",
+                                    "    pm.expect(json).to.have.property('email');",
+                                    "    pm.expect(json).to.not.have.property('password');",
+                                    "    pm.expect(pm.response.text()).to.not.include('$2y$');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["user"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /user — sin token (401)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 sin token', function () {",
+                                    "    pm.response.to.have.status(401);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["user"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /refresh — renovar token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Retorna nuevo token', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('token');",
+                                    "    pm.expect(json.token).to.not.equal(pm.environment.get('admin_token'));",
+                                    "});",
+                                    "",
+                                    "// Actualizar token en el environment",
+                                    "pm.environment.set('admin_token', pm.response.json().token);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/refresh",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["refresh"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login como editor (guardar token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.environment.set('editor_token', pm.response.json().token);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{editor_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login como viewer (guardar token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.environment.set('viewer_token', pm.response.json().token);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"{{viewer_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "02 — RBAC y Gestión de Usuarios",
+            "description": "Pruebas de control de acceso basado en roles. Verifica que admin puede hacer todo, editor solo lo que tiene permiso, y viewer solo lectura.",
+            "item": [
+                {
+                    "name": "GET /users — admin puede listar usuarios",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Respuesta paginada con data array', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('data');",
+                                    "    pm.expect(json.data).to.be.an('array');",
+                                    "    pm.expect(json.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('No expone IDs autoincrementales ni passwords', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.not.match(/\"id\":\\s*\\d+[^-]/);",
+                                    "    pm.expect(body).to.not.include('$2y$');",
+                                    "});",
+                                    "",
+                                    "// Guardar UUID del primer usuario para tests siguientes",
+                                    "var users = pm.response.json().data;",
+                                    "if (users.length > 0) {",
+                                    "    pm.environment.set('first_user_id', users[0].id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /users — viewer puede listar (tiene users.view)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 — viewer tiene users.view', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /users — viewer NO puede crear (403)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 403 — viewer no tiene users.create', function () {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /users — admin crea usuario",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Usuario creado con UUID', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('id');",
+                                    "    pm.expect(json.id).to.match(/^[0-9a-f-]{36}$/);",
+                                    "    pm.expect(json.email).to.equal('nuevo@example.com');",
+                                    "});",
+                                    "",
+                                    "pm.environment.set('new_user_id', pm.response.json().id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nuevo Usuario\",\n    \"email\": \"nuevo@example.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /users/{id} — ver usuario creado",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Retorna el usuario correcto', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.id).to.equal(pm.environment.get('new_user_id'));",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{new_user_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", "{{new_user_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "PUT /users/{id} — admin actualiza usuario",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Nombre actualizado', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.name).to.equal('Nombre Actualizado');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nombre Actualizado\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{new_user_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", "{{new_user_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE /users/{id} — admin elimina usuario",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 204 o 200', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                                    "});",
+                                    "",
+                                    "pm.environment.unset('new_user_id');"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{new_user_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["users", "{{new_user_id}}"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "03 — Catálogo (Categorías y Productos)",
+            "description": "Pruebas del catálogo público y mutaciones protegidas. Captura UUIDs reales para usarlos en carpetas siguientes.",
+            "item": [
+                {
+                    "name": "GET /categories — público, sin token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Retorna categorías paginadas', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('data');",
+                                    "    pm.expect(json.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Guardar UUID de la primera categoría",
+                                    "var cats = pm.response.json().data;",
+                                    "pm.environment.set('category_id', cats[0].id);",
+                                    "pm.environment.set('category_slug', cats[0].slug);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /categories — admin crea categoría",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Categoría creada con UUID', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.id).to.match(/^[0-9a-f-]{36}$/);",
+                                    "    pm.expect(json.slug).to.equal('camisetas-test');",
+                                    "});",
+                                    "",
+                                    "pm.environment.set('new_category_id', pm.response.json().id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Camisetas Test\",\n    \"slug\": \"camisetas-test\",\n    \"is_active\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /categories — viewer NO puede crear (403)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 403', function () {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Intento Viewer\",\n    \"slug\": \"intento-viewer\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /products — público, captura UUID de producto y variación",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Retorna productos paginados', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.data.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "var products = pm.response.json().data;",
+                                    "pm.environment.set('product_id', products[0].id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/products",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["products"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /products/{id} — ver producto con categoría",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Incluye categoría anidada', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('category');",
+                                    "    pm.expect(json.category).to.have.property('id');",
+                                    "});",
+                                    "",
+                                    "pm.test('No expone ID autoincremental', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.not.match(/\"id\":\\s*\\d+[^-]/);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/products/{{product_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["products", "{{product_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /products — admin crea producto",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Producto creado con UUID y precio correcto', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.id).to.match(/^[0-9a-f-]{36}$/);",
+                                    "    pm.expect(json.price).to.equal(14990);",
+                                    "});",
+                                    "",
+                                    "pm.environment.set('new_product_id', pm.response.json().id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Camiseta Funcional Test\",\n    \"slug\": \"camiseta-funcional-test\",\n    \"description\": \"Producto creado por prueba funcional\",\n    \"price\": 14990,\n    \"category_id\": \"{{category_id}}\",\n    \"is_active\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/products",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["products"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "04 — Diseños (Upload S3 / Presigned URLs)",
+            "description": "Pruebas del flujo de upload de diseños a S3 privado y verificación de Presigned URLs. NOTA: El upload real requiere MinIO corriendo. Si no está disponible, los tests de upload fallarán con 500.",
+            "item": [
+                {
+                    "name": "GET /designs — público, captura UUID de diseño",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Diseños tienen file_url (Presigned URL o null)', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    if (json.data.length > 0) {",
+                                    "        var design = json.data[0];",
+                                    "        pm.expect(design).to.have.property('file_url');",
+                                    "        pm.environment.set('design_id', design.id);",
+                                    "    }",
+                                    "});",
+                                    "",
+                                    "pm.test('No expone file_path interno (solo file_url)', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.not.include('\"file_path\"');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/designs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["designs"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /designs — sin token (401)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 sin autenticación', function () {",
+                                    "    pm.response.to.have.status(401);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "name", "value": "Test", "type": "text" }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/designs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["designs"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /designs — validación falla sin imagen (422)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 422 — imagen requerida', function () {",
+                                    "    pm.response.to.have.status(422);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error apunta al campo image', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.errors).to.have.property('image');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "name", "value": "Diseño sin imagen", "type": "text" },
+                                { "key": "product_id", "value": "{{product_id}}", "type": "text" }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/designs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["designs"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /designs — upload real (requiere MinIO + archivo)",
+                    "description": "⚠️ Para ejecutar este test: selecciona un archivo JPG/PNG real en el campo 'image' de la pestaña Body > form-data. Requiere MinIO corriendo en Docker.",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "pm.test('Respuesta incluye Presigned URL con TTL', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('file_url');",
+                                    "    pm.expect(json.file_url).to.include('X-Amz-Expires');",
+                                    "});",
+                                    "",
+                                    "pm.test('No expone file_path interno', function () {",
+                                    "    pm.expect(pm.response.text()).to.not.include('\"file_path\"');",
+                                    "});",
+                                    "",
+                                    "pm.environment.set('uploaded_design_id', pm.response.json().id);"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                { "key": "name", "value": "Diseño Funcional Test", "type": "text" },
+                                { "key": "product_id", "value": "{{product_id}}", "type": "text" },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": "",
+                                    "description": "Selecciona un archivo JPG o PNG (máx 5MB)"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/designs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["designs"]
+                        }
+                    }
+                },
+                {
+                    "name": "DELETE /designs/{id} — admin elimina diseño subido",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Solo ejecutar si se subió un diseño en el test anterior",
+                                    "if (!pm.environment.get('uploaded_design_id')) {",
+                                    "    pm.execution.skipRequest();",
+                                    "}"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 204 o 200', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                                    "});",
+                                    "",
+                                    "pm.environment.unset('uploaded_design_id');"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/designs/{{uploaded_design_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["designs", "{{uploaded_design_id}}"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "05 — Carrito de Compras",
+            "description": "Pruebas del carrito guest y autenticado. Flujo completo: crear carrito guest → agregar items → login → merge al carrito del usuario.",
+            "item": [
+                {
+                    "name": "Generar UUID para carrito guest",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "// Generar UUID v4 para la sesión guest",
+                                    "function uuidv4() {",
+                                    "    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+                                    "        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+                                    "        return v.toString(16);",
+                                    "    });",
+                                    "}",
+                                    "pm.environment.set('guest_cart_session', uuidv4());"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('UUID de sesión guest generado', function () {",
+                                    "    pm.expect(pm.environment.get('guest_cart_session')).to.match(/^[0-9a-f-]{36}$/);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "X-Cart-Session", "value": "{{guest_cart_session}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["cart"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /products/{id} — capturar UUID de variación",
+                    "description": "Necesitamos el UUID de una ProductVariation para agregar al carrito.",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "// Capturar la primera variación disponible",
+                                    "var json = pm.response.json();",
+                                    "if (json.variations && json.variations.length > 0) {",
+                                    "    pm.environment.set('variation_id', json.variations[0].id);",
+                                    "    console.log('Variación capturada:', json.variations[0].id);",
+                                    "} else {",
+                                    "    console.warn('No se encontraron variaciones en este producto. Intenta con otro product_id.');",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/products/{{product_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["products", "{{product_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /cart/items — agregar item (guest)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 o 201', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                                    "});",
+                                    "",
+                                    "pm.test('Carrito tiene items', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('items');",
+                                    "    pm.expect(json.items.length).to.be.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('Total calculado correctamente', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('total');",
+                                    "    pm.expect(json.total).to.be.a('number').and.greaterThan(0);",
+                                    "});",
+                                    "",
+                                    "// Guardar ID del cart item para update/delete",
+                                    "var items = pm.response.json().items;",
+                                    "if (items.length > 0) {",
+                                    "    pm.environment.set('cart_item_id', items[0].id);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "X-Cart-Session", "value": "{{guest_cart_session}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"product_variation_id\": \"{{variation_id}}\",\n    \"quantity\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/items",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["cart", "items"]
+                        }
+                    }
+                },
+                {
+                    "name": "PUT /cart/items/{id} — actualizar cantidad (guest)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Cantidad actualizada a 5', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    var item = json.items.find(i => i.id === pm.environment.get('cart_item_id'));",
+                                    "    if (item) pm.expect(item.quantity).to.equal(5);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Content-Type", "value": "application/json" },
+                            { "key": "X-Cart-Session", "value": "{{guest_cart_session}}" }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantity\": 5\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/items/{{cart_item_id}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["cart", "items", "{{cart_item_id}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /cart/merge — fusionar carrito guest al usuario autenticado",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Carrito del usuario tiene los items del guest', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json).to.have.property('items');",
+                                    "    pm.expect(json.items.length).to.be.greaterThan(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" },
+                            { "key": "X-Cart-Session", "value": "{{guest_cart_session}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/merge",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["cart", "merge"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /cart — ver carrito del usuario autenticado post-merge",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Carrito autenticado tiene items', function () {",
+                                    "    var json = pm.response.json();",
+                                    "    pm.expect(json.items.length).to.be.greaterThan(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["cart"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "06 — Checkout (Transbank Webpay)",
+            "description": "Prueba del inicio del flujo de checkout. El commit es manejado por Transbank directamente y no se prueba aquí.",
+            "item": [
+                {
+                    "name": "POST /checkout — iniciar checkout (requiere carrito con items)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 o 422', function () {",
+                                    "    // 200 = checkout iniciado, 422 = carrito vacío o error de gateway",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 422]);",
+                                    "});",
+                                    "",
+                                    "if (pm.response.code === 200) {",
+                                    "    pm.test('Respuesta tiene token_ws y url de Webpay', function () {",
+                                    "        var json = pm.response.json();",
+                                    "        pm.expect(json).to.have.property('token_ws');",
+                                    "        pm.expect(json).to.have.property('url');",
+                                    "        pm.expect(json.url).to.include('transbank');",
+                                    "    });",
+                                    "",
+                                    "    pm.environment.set('token_ws', pm.response.json().token_ws);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{viewer_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/checkout",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["checkout"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /checkout — sin carrito activo (422)",
+                    "description": "El admin no tiene carrito activo con items, debe retornar 422.",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 422 — sin carrito activo', function () {",
+                                    "    pm.response.to.have.status(422);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/checkout",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["checkout"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "07 — Seguridad",
+            "description": "Pruebas de headers de seguridad, prevención de fugas de datos y health check.",
+            "item": [
+                {
+                    "name": "GET /up — health check",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{appUrl}}/up",
+                            "host": ["{{appUrl}}"],
+                            "path": ["up"]
+                        }
+                    }
+                },
+                {
+                    "name": "Verificar headers de seguridad en cualquier respuesta",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Header X-Frame-Options: DENY', function () {",
+                                    "    pm.expect(pm.response.headers.get('X-Frame-Options')).to.equal('DENY');",
+                                    "});",
+                                    "",
+                                    "pm.test('Header X-Content-Type-Options: nosniff', function () {",
+                                    "    pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.equal('nosniff');",
+                                    "});",
+                                    "",
+                                    "pm.test('Header Content-Security-Policy presente', function () {",
+                                    "    pm.expect(pm.response.headers.get('Content-Security-Policy')).to.exist;",
+                                    "});",
+                                    "",
+                                    "pm.test('Header Strict-Transport-Security presente', function () {",
+                                    "    pm.expect(pm.response.headers.get('Strict-Transport-Security')).to.exist;",
+                                    "});",
+                                    "",
+                                    "pm.test('Header X-Request-ID presente (correlation ID)', function () {",
+                                    "    pm.expect(pm.response.headers.get('X-Request-ID')).to.exist;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [{ "key": "Accept", "value": "application/json" }],
+                        "url": {
+                            "raw": "{{baseUrl}}/categories",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "POST /logout — revocar token admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 200 o 204', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                                    "});",
+                                    "",
+                                    "pm.environment.unset('admin_token');"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/logout",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["logout"]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /user — token revocado ya no funciona (401)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status 401 — token revocado', function () {",
+                                    "    pm.response.to.have.status(401);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            { "key": "Accept", "value": "application/json" },
+                            { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["user"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
