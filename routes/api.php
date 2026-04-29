@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariationController;
 use App\Http\Controllers\UserController;
@@ -61,3 +63,16 @@ Route::middleware('auth:sanctum')->post('/cart/merge', [CartController::class, '
 // Checkout — create requires auth, commit is public callback from Transbank
 Route::middleware('auth:sanctum')->post('/checkout', [CheckoutController::class, 'create']);
 Route::match(['get', 'post'], '/checkout/commit', [CheckoutController::class, 'commit'])->name('checkout.commit');
+
+// User orders — authenticated
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+});
+
+// Admin orders — requires admin role OR orders.view/orders.manage
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/orders', [AdminOrderController::class, 'index']);
+    Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show']);
+    Route::patch('/admin/orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
+});

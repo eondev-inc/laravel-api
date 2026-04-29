@@ -16,6 +16,8 @@ class PermissionSeeder extends Seeder
             ['name' => 'users.update',  'display_name' => 'Actualizar usuarios'],
             ['name' => 'users.delete',  'display_name' => 'Eliminar usuarios'],
             ['name' => 'catalog.manage', 'display_name' => 'Gestionar catálogo'],
+            ['name' => 'orders.view',   'display_name' => 'Ver órdenes'],
+            ['name' => 'orders.manage', 'display_name' => 'Gestionar estado de órdenes'],
         ];
 
         foreach ($permissions as $data) {
