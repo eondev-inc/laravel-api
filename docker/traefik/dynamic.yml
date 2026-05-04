@@ -1,0 +1,13 @@
+http:
+  routers:
+    store:
+      rule: "Host(`store.laravel.localhost`)"
+      service: store
+      entryPoints:
+        - web
+
+  services:
+    store:
+      loadBalancer:
+        servers:
+          - url: "http://172.19.0.1:3000"
